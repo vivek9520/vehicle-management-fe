@@ -1,20 +1,40 @@
-// app/components/Header.tsx
 'use client'; // Ensure this component is client-side
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation'; // Import usePathname hook
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname(); // Get the current path
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check if user is logged in by verifying the token in localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('authToken'); // Get token from localStorage
+    setIsLoggedIn(!!token); // If token exists, set logged in to true
+
+    // Redirect to login page if not logged in and not on the login page
+    if (!token && pathname !== '/login') {
+      router.push('/login');
+    }
+  }, [pathname, router]); // Add pathname and router to the dependency array
 
   const navigateToDashboard = () => {
-    router.push('/dashboard'); // Navigate to the dashboard page
+    router.push('/pages/dashboard'); // Navigate to the dashboard page
   };
 
   const handleLogout = () => {
-    // Handle your logout logic here (e.g., clearing session)
-    router.push('/login'); // Redirect to login page after logout
+    // Clear the auth token from localStorage
+    localStorage.removeItem('authToken');
+    // Redirect to login page after logout
+    router.push('/login');
   };
+
+  // Only render the header with buttons if the user is logged in
+  if (!isLoggedIn) {
+    return null; // Do not render anything if the user is not logged in
+  }
 
   return (
     <header className="bg-[#8174A0] text-white py-4 shadow-md">

@@ -43,7 +43,7 @@ const Dashboard = () => {
             </svg>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-8 max-w-6xl w-full">
             {/* Create Vehicle Card */}
             <div
               className="bg-cover bg-center h-64 rounded-lg shadow-lg overflow-hidden relative"
@@ -119,30 +119,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Search Service Card */}
-            <div
-              className="bg-cover bg-center h-64 rounded-lg shadow-lg overflow-hidden relative"
-              style={{
-                backgroundImage:
-                  'url("https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0")',
-              }}
-            >
-              <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
-              <div className="relative z-10 p-6 flex flex-col justify-between h-full">
-                <h2 className="text-2xl font-semibold text-white mb-4">
-                  Search Service
-                </h2>
-                <p className="text-white mb-6">
-                  Search and view services in the system.
-                </p>
-                <button
-                  className="w-full bg-[#A888B5] text-white py-3 px-6 rounded-lg hover:bg-[#8174A0] transition duration-200"
-                  onClick={() => handleCreate("/pages/service/search")}
-                >
-                  Search Service
-                </button>
-              </div>
-            </div>
+
           </div>
         )}
       </div>
