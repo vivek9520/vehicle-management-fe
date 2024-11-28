@@ -20,8 +20,8 @@ const Header = () => {
     }
   }, [pathname, router]); // Add pathname and router to the dependency array
 
-  const navigateToDashboard = () => {
-    router.push('/pages/dashboard'); // Navigate to the dashboard page
+  const navigateToHome = () => {
+    router.push('/pages/vehicle/search'); // Navigate to the dashboard page
   };
 
   const handleLogout = () => {
@@ -42,10 +42,10 @@ const Header = () => {
         <h1 className="text-2xl font-bold">Service Management</h1>
         <div className="space-x-4">
           <button
-            onClick={navigateToDashboard}
+            onClick={navigateToHome}
             className="px-4 py-2 bg-[#A888B5] rounded hover:bg-[#8174A0] transition duration-200"
           >
-            Dashboard
+            HOME
           </button>
           <button
             onClick={handleLogout}
