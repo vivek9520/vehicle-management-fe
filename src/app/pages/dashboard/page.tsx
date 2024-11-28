@@ -18,9 +18,6 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <Header />
-
       {/* Main Content */}
       <div className="flex-grow flex justify-center items-center w-full p-6">
         {isLoading ? (
@@ -149,11 +146,6 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-
-      {/* Footer Section */}
-      <footer className="w-full py-4 bg-[#8174A0] text-center text-white">
-        <p>&copy; {new Date().getFullYear()} NHO. All Rights Reserved.</p>
-      </footer>
     </div>
   );
 };

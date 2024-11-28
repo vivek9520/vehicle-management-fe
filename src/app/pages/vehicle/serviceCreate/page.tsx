@@ -4,7 +4,6 @@ import Header from "@/app/components/Header";
 export default function CreateService() {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-100 to-gray-200">
-    <Header/>
   
         {/* Main Content */}
         <main className="flex-grow flex justify-center items-center">
@@ -77,7 +76,6 @@ export default function CreateService() {
           </div>
         </main>
   
-        <Footer/>
       </div>
     );
   }
