@@ -63,9 +63,15 @@ const SearchPage = () => {
     }, 1500); // Simulate delay
   };
 
+  // Add Vehicle Button - Handles Spinner and Navigation
+  const handleCreateCommon = (path: string) => {
+    // Show spinner for add vehicle button
+    router.push(path); // Simulate navigation (could be a real API call or route change)
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 bg-gradient-to-r from-[#A888B5] via-[#8174A0] to-[#EFB6C8] text-transparent bg-clip-text shadow-xl tracking-wide p-4">
+    <div className="min-h-screen bg-[#D4EBF8] p-6">
+      <h1 className="text-4xl font-bold mb-8 text-center text-[#0A3981] bg-gradient-to-r from-[#0A3981] to-[#D4EBF8] text-transparent bg-clip-text shadow-xl tracking-wide p-4">
         Search Vehicle by Registration Number
       </h1>
 
@@ -79,11 +85,11 @@ const SearchPage = () => {
               placeholder="Enter Registration Number"
               value={registrationNumber}
               onChange={(e) => setRegistrationNumber(e.target.value)}
-              className="p-3 border border-[#A888B5] rounded-lg shadow-md w-full sm:w-96 focus:outline-none focus:ring-2 focus:ring-[#A888B5] placeholder-gray-500"
+              className="p-3 border border-[#0A3981] rounded-lg shadow-md w-full sm:w-96 focus:outline-none focus:ring-2 focus:ring-[#0A3981] placeholder-gray-500"
             />
             <button
               onClick={handleSearch}
-              className="px-6 py-2 text-sm bg-[#A888B5] text-white rounded-lg border border-[#A888B5] hover:bg-[#8174A0] hover:border-[#8174A0] transition duration-300 mt-4 sm:mt-0"
+              className="px-6 py-2 text-sm bg-[#0A3981] text-white rounded-lg border border-[#0A3981] hover:bg-[#D4EBF8] hover:border-[#D4EBF8] transition duration-300 mt-4 sm:mt-0"
             >
               {searchLoading ? (
                 <div className="flex items-center">
@@ -115,12 +121,12 @@ const SearchPage = () => {
         {/* Add Vehicle Button */}
         <button
           onClick={() => handleCreate('/pages/vehicle/create')}
-          className="px-6 py-2 text-sm text-teal-500 rounded-lg border border-teal-500 hover:bg-teal-500 hover:text-white transition duration-300 shadow-md"
+          className="px-6 py-2 text-sm text-[#0A3981] rounded-lg border border-[#0A3981] hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 shadow-md"
         >
           {addVehicleLoading ? (
             <div className="flex items-center">
               <svg
-                className="animate-spin h-5 w-5 mr-3 text-teal-500"
+                className="animate-spin h-5 w-5 mr-3 text-[#0A3981]"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="none"
@@ -149,80 +155,83 @@ const SearchPage = () => {
 
       {details && (
         <div className="mt-8 max-w-full mx-auto bg-white shadow-lg p-6 rounded-lg border border-gray-200">
-          <h2 className="text-3xl font-semibold text-center mb-6 text-gray-800">
+          <h2 className="text-3xl font-semibold text-center mb-6 text-[#0A3981]">
             Vehicle Details
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Vehicle Details */}
             <div>
-              <p className="font-medium text-gray-700">Registration No:</p>
+              <p className="font-medium text-[#0A3981]">Registration No:</p>
               <p className="text-xl font-semibold text-gray-900">{details.registrationNo}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Model:</p>
+              <p className="font-medium text-[#0A3981]">Model:</p>
               <p className="text-xl font-semibold text-gray-900">{details.tradeDesignation}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Brand:</p>
+              <p className="font-medium text-[#0A3981]">Brand:</p>
               <p className="text-xl font-semibold text-gray-900">{details.brand}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Color:</p>
+              <p className="font-medium text-[#0A3981]">Color:</p>
               <p className="text-xl font-semibold text-gray-900">{details.color}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Vehicle Category:</p>
+              <p className="font-medium text-[#0A3981]">Vehicle Category:</p>
               <p className="text-xl font-semibold text-gray-900">{details.vehicleCategory}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Emission Class:</p>
+              <p className="font-medium text-[#0A3981]">Emission Class:</p>
               <p className="text-xl font-semibold text-gray-900">{details.emissionClass}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">CO2 Level:</p>
+              <p className="font-medium text-[#0A3981]">CO2 Level:</p>
               <p className="text-xl font-semibold text-gray-900">{details.co2Level} g/km</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Fuel Type:</p>
+              <p className="font-medium text-[#0A3981]">Fuel Type:</p>
               <p className="text-xl font-semibold text-gray-900">{details.fuel}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Date of First Commissioning:</p>
+              <p className="font-medium text-[#0A3981]">Date of First Commissioning:</p>
               <p className="text-xl font-semibold text-gray-900">{details.dateOfFirstCommissioning}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Acquisition Date:</p>
+              <p className="font-medium text-[#0A3981]">Acquisition Date:</p>
               <p className="text-xl font-semibold text-gray-900">{details.acquisitionDate}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Rear Tire Dimension:</p>
+              <p className="font-medium text-[#0A3981]">Rear Tire Dimension:</p>
               <p className="text-xl font-semibold text-gray-900">{details.rearTireDimension}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">Insurance Company:</p>
+              <p className="font-medium text-[#0A3981]">Insurance Company:</p>
               <p className="text-xl font-semibold text-gray-900">{details.insuranceCompany}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-700">E-Identification Number:</p>
+              <p className="font-medium text-[#0A3981]">E-Identification Number:</p>
               <p className="text-xl font-semibold text-gray-900">{details.eidentificationNumber}</p>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex justify-end mt-6 space-x-4">
-            <button className="px-6 py-2 border-2 border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-300 ease-in-out">
+            <button
+              onClick={() => handleCreateCommon('/pages/vehicle/service-history')}
+              className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
+            >
               Service History
             </button>
-            <button className="px-6 py-2 border-2 border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition duration-300 ease-in-out">
+            <button
+              onClick={() => router.push(`serviceCreate/${details.idVehicle}`)}
+              className="px-6 py-2 border-2 border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition duration-300 ease-in-out"
+            >
               New Service
             </button>
-
           </div>
         </div>
       )}
-
-
     </div>
   );
 };

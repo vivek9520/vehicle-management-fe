@@ -12,6 +12,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        sans: ['Roboto', 'sans-serif'], // Add Roboto as the default sans-serif font
+      },
     },
   },
   plugins: [],

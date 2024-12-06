@@ -1,4 +1,4 @@
-"use client";
+'use client'; // Ensure this component is client-side
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Ensure you are using 'next/navigation' in Next.js 13+
@@ -33,7 +33,7 @@ const Login = () => {
       });
 
       // Assuming the API returns a token in the response
-      const { token } = response.data;
+      const { token } = response.data.data;
 
       if (token) {
         // Save the token to localStorage or a cookie
@@ -60,16 +60,16 @@ const Login = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#A888B5] via-[#8174A0] to-[#EFB6C8]">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#D4EBF8] to-[#0A3981]">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center text-[#8174A0] mb-4">Login</h2>
+        <h2 className="text-2xl font-bold text-center text-[#0A3981] mb-4">Login</h2>
         
         {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-[#8174A0]">
+            <label htmlFor="username" className="block text-sm font-medium text-[#0A3981]">
               Email Address
             </label>
             <input
@@ -77,7 +77,7 @@ const Login = () => {
               type="email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border border-[#A888B5] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A888B5]"
+              className="mt-1 w-full px-4 py-2 border border-[#0A3981] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A3981]"
               placeholder="Enter your email"
               required
             />
@@ -85,7 +85,7 @@ const Login = () => {
 
           {/* Password Field */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[#8174A0]">
+            <label htmlFor="password" className="block text-sm font-medium text-[#0A3981]">
               Password
             </label>
             <input
@@ -93,7 +93,7 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border border-[#A888B5] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A888B5]"
+              className="mt-1 w-full px-4 py-2 border border-[#0A3981] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0A3981]"
               placeholder="Enter your password"
               required
             />
@@ -103,7 +103,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full bg-[#FFD2A0] text-[#8174A0] py-2 px-4 rounded-lg hover:bg-[#EFB6C8] transition"
+              className="w-full bg-[#0A3981] text-white py-2 px-4 rounded-lg hover:bg-[#D4EBF8] transition"
             >
               Login
             </button>
@@ -111,7 +111,7 @@ const Login = () => {
         </form>
 
         <div className="mt-4 text-center">
-          <a href="#" className="text-[#A888B5] hover:underline">Forgot password?</a>
+          <a href="#" className="text-[#0A3981] hover:underline">Forgot password?</a>
         </div>
       </div>
     </div>

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "@/app/components/Footer";
 import Header from "@/app/components/Header";
+import { Company, Office, Vehicle } from "@/app/models/types";
 
 export default function CreateVehicle() {
   // State for form fields
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Vehicle>({
     dateOfFirstCommissioning: "",
     acquisitionDate: "",
     registrationNo: "",
@@ -19,7 +20,11 @@ export default function CreateVehicle() {
     co2Level: "",
     fuel: "",
     insuranceCompany: "",
-    rearTireDimension: ""
+    rearTireDimension: "",
+    idOffice:"",
+    idCompany:"",
+    dateOfControlCurrent:"",
+    dateOfControlNext:""
   });
 
   // State for handling spinner and popup
@@ -27,6 +32,47 @@ export default function CreateVehicle() {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState(""); // success or error
   const [showPopup, setShowPopup] = useState(false);
+  const [companies, setCompanies] = useState<Company[]>([])
+  const [offices, setOffices] = useState<Office[]>([]);
+
+
+  useEffect(() => {
+    fetchCompanyData();
+  }, []);
+
+
+  async function fetchCompanyData() {
+    const token = localStorage.getItem('authToken');  // Retrieve the token from localStorage (or wherever it's stored)
+  
+    if (!token) {
+      console.error('Token is missing');
+      return;
+    }
+  
+    try {
+      const res = await fetch('http://localhost:8080/api/v1/company/all', {
+        method: 'GET',  // 'GET' method for retrieving data
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Authorization header with the Bearer token
+          'Content-Type': 'application/json',  // Optional: to specify that you expect JSON
+        },
+      });
+  
+      // Check if the response status is OK (200)
+      if (!res.ok) {
+        throw new Error(`Failed to fetch data: ${res.statusText}`);
+      }
+  
+      // Parse the JSON response
+      const data = await res.json();
+      setCompanies(data.data)
+      console.log(data);  // Log the fetched data
+  
+      // You can then use the data (e.g., set it in your state or display in a dropdown)
+    } catch (error) {
+      console.error('Error fetching data:', error);  // Handle any errors that occurred
+    }
+  }
 
   // Handle input changes
   const handleInputChange = (e: { target: { name: string; value: string } }) => {
@@ -72,7 +118,11 @@ export default function CreateVehicle() {
             co2Level: "",
             fuel: "",
             insuranceCompany: "",
-            rearTireDimension: ""
+            rearTireDimension: "",
+            idOffice:"",
+            idCompany:"",
+            dateOfControlCurrent:"",
+            dateOfControlNext:""
           });
         } else {
           setPopupMessage("There was an error creating the vehicle. Please try again.");
@@ -88,6 +138,34 @@ export default function CreateVehicle() {
         setShowPopup(true);
       }, 1500);
     }
+  };
+
+
+  // Handle company selection
+  const handleCompanyChange = (e: { target: { value: any; }; }) => {
+    const selectedCompanyId = e.target.value;
+    setFormData((prevData) => ({
+      ...prevData,
+      idCompany: selectedCompanyId,
+      idOffice: '' // Reset office when company changes
+    }));
+
+    // Find the selected company and update the office list
+    const selectedCompany = companies.find(
+      (company) => company.idCompany === parseInt(selectedCompanyId)
+    );
+    if (selectedCompany) {
+      setOffices(selectedCompany.offices);
+    }
+  };
+
+  // Handle office selection
+  const handleOfficeChange = (e: { target: { value: any; }; }) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      idOffice: value,
+    }));
   };
 
   return (
@@ -178,6 +256,38 @@ export default function CreateVehicle() {
               />
             </div>
 
+            
+            <div>
+              <label htmlFor="dateOfControlCurrent" className="block font-medium text-[#8174A0]">
+              Control Current Date / Förvärvsdatum
+              </label>
+              <input
+                type="date"
+                id="dateOfControlCurrent"
+                name="dateOfControlCurrent"
+                value={formData.dateOfControlCurrent}
+                onChange={handleInputChange}
+                required
+                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+              />
+            </div>
+
+            
+            <div>
+              <label htmlFor="dateOfControlNext" className="block font-medium text-[#8174A0]">
+             Control Next Date / Förvärvsdatum
+              </label>
+              <input
+                type="date"
+                id="dateOfControlNext"
+                name="dateOfControlNext"
+                value={formData.dateOfControlNext}
+                onChange={handleInputChange}
+                required
+                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+              />
+            </div>
+
             <div>
               <label htmlFor="tradeDesignation" className="block font-medium text-[#8174A0]">
                 Trade Designation / Yrkesbenämning
@@ -209,6 +319,53 @@ export default function CreateVehicle() {
                 className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
               />
             </div>
+            <div>
+      {/* Company Dropdown */}
+      <label htmlFor="company" className="block font-medium text-[#8174A0]">
+        Company / Företag
+      </label>
+      <select
+        id="company"
+        name="company"
+      
+        onChange={handleCompanyChange}
+        required
+        className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+      >
+        <option value="">Select Company</option>
+        {/* Dynamically generate options from the companies list */}
+        {companies.map((company) => (
+          <option key={company.idCompany} value={company.idCompany}>
+            {company.companyName}  {/* Display the company name */}
+          </option>
+        ))}
+      </select>
+
+      {/* Office Dropdown (conditional on company selection) */}
+      {formData.idCompany && (
+        <div>
+          <label htmlFor="office" className="block font-medium text-[#8174A0]">
+            Office / Kontor
+          </label>
+          <select
+            id="office"
+            name="office"
+            value={formData.idOffice}
+            onChange={handleOfficeChange}
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          >
+            <option value="">Select Office</option>
+            {/* Dynamically generate office options based on selected company */}
+            {offices.map((office) => (
+              <option key={office.idOffice} value={office.idOffice}>
+                {office.officeName}  {/* Display the office name */}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+    </div>
 
             <div>
               <label htmlFor="color" className="block font-medium text-[#8174A0]">
