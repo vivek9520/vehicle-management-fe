@@ -21,7 +21,7 @@ const Header = () => {
   }, [pathname, router]); // Add pathname and router to the dependency array
 
   const navigateToHome = () => {
-    router.push('/pages/vehicle/search'); // Navigate to the dashboard page
+    router.push('/vehicle/search'); // Navigate to the dashboard page
   };
 
   const handleLogout = () => {

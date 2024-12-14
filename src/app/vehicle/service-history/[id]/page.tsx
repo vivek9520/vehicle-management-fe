@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const ServiceDetailsPage = () => {
+const ServiceHistoryPage = () => {
   const data = [
     {
       idService: 3,
@@ -62,4 +62,4 @@ const ServiceDetailsPage = () => {
   );
 };
 
-export default ServiceDetailsPage;
+export default ServiceHistoryPage;

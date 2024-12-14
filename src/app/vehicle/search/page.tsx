@@ -120,7 +120,7 @@ const SearchPage = () => {
 
         {/* Add Vehicle Button */}
         <button
-          onClick={() => handleCreate('/pages/vehicle/create')}
+          onClick={() => handleCreate('/vehicle/create')}
           className="px-6 py-2 text-sm text-[#0A3981] rounded-lg border border-[#0A3981] hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 shadow-md"
         >
           {addVehicleLoading ? (
@@ -218,13 +218,13 @@ const SearchPage = () => {
           {/* Buttons */}
           <div className="flex justify-end mt-6 space-x-4">
             <button
-              onClick={() => handleCreateCommon('/pages/vehicle/service-history')}
+              onClick={() => handleCreateCommon(`/vehicle/service-history/${details.idVehicle}`)}
               className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
             >
               Service History
             </button>
             <button
-              onClick={() => router.push(`serviceCreate/${details.idVehicle}`)}
+              onClick={() => handleCreateCommon(`/vehicle/create-service/${details.idVehicle}`)}
               className="px-6 py-2 border-2 border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition duration-300 ease-in-out"
             >
               New Service

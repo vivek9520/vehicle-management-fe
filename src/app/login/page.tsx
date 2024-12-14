@@ -40,7 +40,7 @@ const Login = () => {
         localStorage.setItem("authToken", token);
 
         // Redirect to the dashboard or another page after successful login
-        router.push("/pages/vehicle/search");
+        router.push("/vehicle/search");
       } else {
         setError("Login failed. Please try again.");
       }
