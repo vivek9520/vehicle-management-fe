@@ -6,8 +6,8 @@ import Header from "@/app/components/Header";
 import { Company, Office, Vehicle } from "@/app/models/types";
 
 export default function CreateVehicle() {
-  // State for form fields
-  const [formData, setFormData] = useState<Vehicle>({
+
+  const initialFormData ={
     dateOfFirstCommissioning: "",
     acquisitionDate: "",
     registrationNo: "",
@@ -25,7 +25,9 @@ export default function CreateVehicle() {
     idCompany:"",
     dateOfControlCurrent:"",
     dateOfControlNext:""
-  });
+  }
+  // State for form fields
+  const [formData, setFormData] = useState<Vehicle>(initialFormData);
 
   // State for handling spinner and popup
   const [isLoading, setIsLoading] = useState(false);
@@ -105,25 +107,7 @@ export default function CreateVehicle() {
           setPopupMessage("Vehicle created successfully!");
           setPopupType("success");
           setShowPopup(true);
-          setFormData({
-            dateOfFirstCommissioning: "",
-            acquisitionDate: "",
-            registrationNo: "",
-            vehicleCategory: "",
-            brand: "",
-            tradeDesignation: "",
-            eIdentificationNumber: "",
-            color: "",
-            emissionClass: "",
-            co2Level: "",
-            fuel: "",
-            insuranceCompany: "",
-            rearTireDimension: "",
-            idOffice:"",
-            idCompany:"",
-            dateOfControlCurrent:"",
-            dateOfControlNext:""
-          });
+          setFormData(initialFormData);
         } else {
           setPopupMessage("There was an error creating the vehicle. Please try again.");
           setPopupType("error");
@@ -172,14 +156,14 @@ export default function CreateVehicle() {
     <div className="min-h-screen flex flex-col bg-[#F9F6F1]">
       <main className="flex-grow flex justify-center items-start py-8 px-4">
         <div className="bg-white shadow-lg rounded-lg p-10 w-full max-w-7xl grid gap-6">
-          <h2 className="text-3xl font-bold text-[#8174A0] text-center mb-6">
+          <h2 className="text-3xl font-bold text-[#001A6E] text-center mb-6">
             Create Vehicle / Skapa Fordon
           </h2>
 
           {/* Form Fields - 3x3 Grid Layout */}
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div>
-              <label htmlFor="dateOfFirstCommissioning" className="block font-medium text-[#8174A0]">
+              <label htmlFor="dateOfFirstCommissioning" className="block font-medium text-[#001A6E]">
                 Date of First Commissioning / Datum för första användning
               </label>
               <input
@@ -194,7 +178,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="acquisitionDate" className="block font-medium text-[#8174A0]">
+              <label htmlFor="acquisitionDate" className="block font-medium text-[#001A6E]">
                 Acquisition Date / Förvärvsdatum
               </label>
               <input
@@ -209,7 +193,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="registrationNo" className="block font-medium text-[#8174A0]">
+              <label htmlFor="registrationNo" className="block font-medium text-[#001A6E]">
                 Registration Number / Registreringsnummer
               </label>
               <input
@@ -225,7 +209,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="vehicleCategory" className="block font-medium text-[#8174A0]">
+              <label htmlFor="vehicleCategory" className="block font-medium text-[#001A6E]">
                 Vehicle Category / Fordonskategori
               </label>
               <input
@@ -241,7 +225,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="brand" className="block font-medium text-[#8174A0]">
+              <label htmlFor="brand" className="block font-medium text-[#001A6E]">
                 Brand / Märke
               </label>
               <input
@@ -258,7 +242,7 @@ export default function CreateVehicle() {
 
             
             <div>
-              <label htmlFor="dateOfControlCurrent" className="block font-medium text-[#8174A0]">
+              <label htmlFor="dateOfControlCurrent" className="block font-medium text-[#001A6E]">
               Control Current Date / Förvärvsdatum
               </label>
               <input
@@ -274,7 +258,7 @@ export default function CreateVehicle() {
 
             
             <div>
-              <label htmlFor="dateOfControlNext" className="block font-medium text-[#8174A0]">
+              <label htmlFor="dateOfControlNext" className="block font-medium text-[#001A6E]">
              Control Next Date / Förvärvsdatum
               </label>
               <input
@@ -289,7 +273,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="tradeDesignation" className="block font-medium text-[#8174A0]">
+              <label htmlFor="tradeDesignation" className="block font-medium text-[#001A6E]">
                 Trade Designation / Yrkesbenämning
               </label>
               <input
@@ -305,7 +289,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="eIdentificationNumber" className="block font-medium text-[#8174A0]">
+              <label htmlFor="eIdentificationNumber" className="block font-medium text-[#001A6E]">
                 E-Identification Number / E-ID Nummer
               </label>
               <input
@@ -321,7 +305,7 @@ export default function CreateVehicle() {
             </div>
             <div>
       {/* Company Dropdown */}
-      <label htmlFor="company" className="block font-medium text-[#8174A0]">
+      <label htmlFor="company" className="block font-medium text-[#001A6E]">
         Company / Företag
       </label>
       <select
@@ -344,7 +328,7 @@ export default function CreateVehicle() {
       {/* Office Dropdown (conditional on company selection) */}
       {formData.idCompany && (
         <div>
-          <label htmlFor="office" className="block font-medium text-[#8174A0]">
+          <label htmlFor="office" className="block font-medium text-[#001A6E]">
             Office / Kontor
           </label>
           <select
@@ -368,7 +352,7 @@ export default function CreateVehicle() {
     </div>
 
             <div>
-              <label htmlFor="color" className="block font-medium text-[#8174A0]">
+              <label htmlFor="color" className="block font-medium text-[#001A6E]">
                 Color / Färg
               </label>
               <input
@@ -384,7 +368,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="emissionClass" className="block font-medium text-[#8174A0]">
+              <label htmlFor="emissionClass" className="block font-medium text-[#001A6E]">
                 Emission Class / Utsläppsklass
               </label>
               <input
@@ -400,7 +384,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="co2Level" className="block font-medium text-[#8174A0]">
+              <label htmlFor="co2Level" className="block font-medium text-[#001A6E]">
                 CO2 Level / CO2 Nivå
               </label>
               <input
@@ -417,7 +401,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="fuel" className="block font-medium text-[#8174A0]">
+              <label htmlFor="fuel" className="block font-medium text-[#001A6E]">
                 Fuel / Bränsle
               </label>
               <select
@@ -437,7 +421,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="rearTireDimension" className="block font-medium text-[#8174A0]">
+              <label htmlFor="rearTireDimension" className="block font-medium text-[#001A6E]">
                 Rear Tire Dimension / Bakdäcksdimension
               </label>
               <input
@@ -453,7 +437,7 @@ export default function CreateVehicle() {
             </div>
 
             <div>
-              <label htmlFor="insuranceCompany" className="block font-medium text-[#8174A0]">
+              <label htmlFor="insuranceCompany" className="block font-medium text-[#001A6E]">
                 Insurance Company / Försäkringsbolag
               </label>
               <input
@@ -471,7 +455,7 @@ export default function CreateVehicle() {
             <div className="col-span-full flex justify-center mt-6">
               <button
                 type="submit"
-                className={`flex items-center justify-center bg-[#EFB6C8] text-white py-3 px-6 rounded-md font-bold transition duration-300 ${isLoading ? "cursor-not-allowed opacity-70" : "hover:bg-[#D997A5]"}`}
+                className={`flex items-center justify-center bg-[#001A6E] text-white py-3 px-6 rounded-md font-bold transition duration-300 ${isLoading ? "cursor-not-allowed opacity-70" : "hover:bg-[#D997A5]"}`}
                 disabled={isLoading}
               >
                 {isLoading ? (

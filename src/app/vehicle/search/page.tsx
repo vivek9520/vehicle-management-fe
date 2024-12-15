@@ -12,6 +12,8 @@ const SearchPage = () => {
   const [addVehicleLoading, setAddVehicleLoading] = useState(false); // For add vehicle button
   const router = useRouter();
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleSearch = async () => {
     if (!registrationNumber) return;
 
@@ -71,7 +73,7 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-[#D4EBF8] p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center text-[#0A3981] bg-gradient-to-r from-[#0A3981] to-[#D4EBF8] text-transparent bg-clip-text shadow-xl tracking-wide p-4">
+      <h1 className="text-4xl font-bold mb-8 text-center text-[#0A3981] bg-gradient-to-r from-[#001A6E] to-[#001A6E] text-transparent bg-clip-text shadow-xl tracking-wide p-4">
         Search Vehicle by Registration Number
       </h1>
 

@@ -37,33 +37,48 @@ const Header = () => {
   }
 
   return (
-    <header className="bg-[#D4EBF8] text-white py-4 shadow-xl border-b-4 border-[#0A3981] transition-all duration-300 ease-in-out">
-      <div className="container mx-auto flex justify-between items-center px-4">
+    <header className="bg-[#001A6E] text-white py-4 shadow-md border-b border-white">
+      <div className="container mx-auto flex justify-between items-center px-4 sm:px-6 md:px-8">
         <div className="flex items-center space-x-6">
           {/* Logo 1 */}
           <img
             src="/logo/logo 1.png" // Replace with your logo path
             alt="Logo 1"
-            className="w-12 h-12"
+            className="w-12 h-12 sm:w-16 sm:h-16"
           />
           {/* Logo 2 */}
           <img
             src="/logo/logo2.png" // Replace with your logo path
             alt="Logo 2"
-            className="w-12 h-12"
+            className="w-12 h-12 sm:w-16 sm:h-16"
           />
         </div>
-        <h1 className="text-2xl font-bold text-[#0A3981]">Service Management</h1>
-        <div className="space-x-4">
+        <h1 className="text-2xl font-bold hidden sm:block">Service Management</h1>
+        <div className="space-x-4 hidden sm:flex">
           <button
             onClick={navigateToHome}
-            className="px-4 py-2 bg-[#0A3981] text-white rounded hover:bg-[#FFD2A0] transition duration-200"
+            className="px-3 py-1.5 text-sm bg-white text-[#001A6E] rounded hover:bg-[#E6E6E6] transition duration-200"
           >
             HOME
           </button>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-[#FFD2A0] text-[#0A3981] rounded hover:bg-[#EFB6C8] transition duration-200"
+            className="px-3 py-1.5 text-sm bg-[#001A6E] text-white border border-white rounded hover:bg-[#002A9C] transition duration-200"
+          >
+            Logout
+          </button>
+        </div>
+        {/* Mobile View */}
+        <div className="sm:hidden flex items-center space-x-2">
+          <button
+            onClick={navigateToHome}
+            className="px-2 py-1 text-sm bg-white text-[#001A6E] rounded hover:bg-[#E6E6E6] transition duration-200"
+          >
+            HOME
+          </button>
+          <button
+            onClick={handleLogout}
+            className="px-2 py-1 text-sm bg-[#001A6E] text-white border border-white rounded hover:bg-[#002A9C] transition duration-200"
           >
             Logout
           </button>

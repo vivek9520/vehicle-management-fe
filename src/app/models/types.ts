@@ -31,4 +31,12 @@ export interface Office {
     dateOfControlCurrent:string,
     dateOfControlNext:string
   }
+
+  export interface ServiceHistory{
+      idService: string,
+      serviceType: string,
+      serviceDate: string,
+      description:string,
+      VehicleInfoL:Vehicle
+  }
   

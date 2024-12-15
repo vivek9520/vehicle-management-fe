@@ -1,27 +1,46 @@
 'use client'; // Ensure this component is client-side
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import {useParams} from 'next/navigation'
+import axios from 'axios';
+import { ServiceHistory } from '@/app/models/types';
 
 const ServiceHistoryPage = () => {
-  const data = [
-    {
-      idService: 3,
-      serviceType: 'Oil Change',
-      serviceDate: '2024-11-23',
-      description: 'Changed engine oil and replaced oil filter.',
-    },
-    {
-      idService: 4,
-      serviceType: 'Brake Inspection',
-      serviceDate: '2024-11-15',
-      description: 'Checked and replaced brake pads.',
-    },
-    // Add more data as needed
-  ];
 
+  const [tableData, setTableData] = useState<ServiceHistory[]>([])
+
+
+  const {id} = useParams();
+
+  useEffect(()=>{
+    fetchHistoryData()
+  },[id])
+
+  const fetchHistoryData =async()=>{
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        console.error('Token is missing');
+        return;
+    }
+
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    };
+      const result = await axios.get<ServiceHistory[]>(`http://localhost:8080/api/v1/service_activity/search-service-history?idVehicle=`+id, {headers})
+
+      if(result.status==200){
+        console.log(result.data)
+        setTableData(result.data.data)
+      }
+    } catch (error) {
+      
+    }
+  }
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800 bg-gradient-to-r from-[#A888B5] via-[#8174A0] to-[#EFB6C8] text-transparent bg-clip-text shadow-md tracking-wide">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800 bg-gradient-to-r from-[#001A6E] via-[#001A6E] to-[#001A6E] text-transparent bg-clip-text shadow-md tracking-wide">
         Vehicle Service Details
       </h1>
 
@@ -36,7 +55,7 @@ const ServiceHistoryPage = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
+            {tableData.map((item, index) => (
               <tr
                 key={item.idService}
                 className={`hover:bg-gray-100 ${
@@ -54,7 +73,7 @@ const ServiceHistoryPage = () => {
       </div>
 
       <div className="mt-6 flex justify-center">
-        <button className="px-6 py-2 bg-[#A888B5] text-white rounded-lg hover:bg-[#8174A0] transition duration-300">
+        <button className="px-6 py-2 bg-[#001A6E] text-white rounded-lg hover:bg-[#8174A0] transition duration-300">
           Add New Service
         </button>
       </div>
