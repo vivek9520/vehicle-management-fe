@@ -2,15 +2,41 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Office, Vehicle } from '@/app/models/types';
+import axios from 'axios';
 
 const SearchPage = () => {
+
+  const initialDetails: Vehicle = {
+    dateOfFirstCommissioning: "",
+    acquisitionDate: "",
+    registrationNo: "",
+    vehicleCategory: "",
+    brand: "",
+    tradeDesignation: "",
+    eIdentificationNumber: "",
+    color: "",
+    emissionClass: "",
+    co2Level: "",
+    fuel: "",
+    insuranceCompany: "",
+    rearTireDimension: "",
+    idOffice: "",
+    idCompany: "",
+    dateOfControlCurrent: "",
+    dateOfControlNext: "",
+    idVehicle: '',
+
+  }
   const [registrationNumber, setRegistrationNumber] = useState('');
-  const [details, setDetails] = useState<any>(null);
+  const [details, setDetails] = useState<Vehicle>(initialDetails);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchLoading, setSearchLoading] = useState(false); // For search button
   const [addVehicleLoading, setAddVehicleLoading] = useState(false); // For add vehicle button
   const router = useRouter();
+  const [office, setOffice] = useState<Office>()
+  const [company, setCompany] = useState("")
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -43,13 +69,14 @@ const SearchPage = () => {
 
       if (response.ok) {
         setDetails(data.data);
+        getOfficeDetails(data.data.idOffice)
       } else {
         setError(data.message || 'Error fetching details');
-        setDetails(null);
+        setDetails(initialDetails);
       }
     } catch (err) {
       setError('Error fetching details');
-      setDetails(null);
+      setDetails(initialDetails);
     } finally {
       setSearchLoading(false); // Hide spinner after request is completed
     }
@@ -65,11 +92,33 @@ const SearchPage = () => {
     }, 1500); // Simulate delay
   };
 
-  // Add Vehicle Button - Handles Spinner and Navigation
+
   const handleCreateCommon = (path: string) => {
-    // Show spinner for add vehicle button
-    router.push(path); // Simulate navigation (could be a real API call or route change)
+
+    router.push(path);
   };
+
+  const getOfficeDetails = async (id: any) => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setError('Authentication token is missing.');
+      setSearchLoading(false); // Hide spinner on error
+      return;
+    }
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+    try {
+      const result = await axios.get(`http://localhost:8080/api/v1/office?officeId=` + id,{headers})
+      if (result.status == 200) {
+        const {data} = result.data
+        setOffice(data)
+      }
+    } catch (error) {
+
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#D4EBF8] p-6">
@@ -189,7 +238,7 @@ const SearchPage = () => {
             </div>
             <div>
               <p className="font-medium text-[#0A3981]">CO2 Level:</p>
-              <p className="text-xl font-semibold text-gray-900">{details.co2Level} g/km</p>
+              <p className="text-xl font-semibold text-gray-900">{details.co2Level} </p>
             </div>
             <div>
               <p className="font-medium text-[#0A3981]">Fuel Type:</p>
@@ -213,7 +262,19 @@ const SearchPage = () => {
             </div>
             <div>
               <p className="font-medium text-[#0A3981]">E-Identification Number:</p>
-              <p className="text-xl font-semibold text-gray-900">{details.eidentificationNumber}</p>
+              <p className="text-xl font-semibold text-gray-900">{details.eIdentificationNumber}</p>
+            </div>
+            <div>
+              <p className="font-medium text-[#0A3981]">Next Control Date:</p>
+              <p className="text-xl font-semibold text-gray-900">{details.dateOfControlNext}</p>
+            </div>
+            <div>
+              <p className="font-medium text-[#0A3981]">Current Control Date:</p>
+              <p className="text-xl font-semibold text-gray-900">{details.dateOfControlCurrent}</p>
+            </div>
+            <div>
+              <p className="font-medium text-[#0A3981]">Office:</p>
+              <p className="text-xl font-semibold text-gray-900">{office?.officeName}</p>
             </div>
           </div>
 

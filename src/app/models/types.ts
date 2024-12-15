@@ -13,6 +13,7 @@ export interface Office {
 
 
   export interface Vehicle {
+    idVehicle:string
     dateOfFirstCommissioning: string;
     acquisitionDate: string;
     registrationNo: string;
