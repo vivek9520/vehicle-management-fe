@@ -31,8 +31,8 @@ const ServiceHistoryPage = () => {
       const result = await axios.get<ServiceHistory[]>(`http://localhost:8080/api/v1/service_activity/search-service-history?idVehicle=`+id, {headers})
 
       if(result.status==200){
-        console.log(result.data)
-        setTableData(result.data.data)
+        const {data} = result.data
+        setTableData(data)
       }
     } catch (error) {
       

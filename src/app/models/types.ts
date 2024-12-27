@@ -20,7 +20,7 @@ export interface Office {
     vehicleCategory: string;
     brand: string;
     tradeDesignation: string;
-    eIdentificationNumber: string;
+    eidentificationNumber: string;
     color: string;
     emissionClass: string;
     co2Level: string;

@@ -14,7 +14,7 @@ const SearchPage = () => {
     vehicleCategory: "",
     brand: "",
     tradeDesignation: "",
-    eIdentificationNumber: "",
+    eidentificationNumber: "",
     color: "",
     emissionClass: "",
     co2Level: "",
@@ -82,6 +82,8 @@ const SearchPage = () => {
     }
   };
 
+  
+
   // Add Vehicle Button - Handles Spinner and Navigation
   const handleCreate = (path: string) => {
     setAddVehicleLoading(true); // Show spinner for add vehicle button
@@ -119,6 +121,8 @@ const SearchPage = () => {
 
     }
   }
+
+  const isButtonDisabled = initialDetails.registrationNo ===""
 
   return (
     <div className="min-h-screen bg-[#D4EBF8] p-6">
@@ -262,7 +266,7 @@ const SearchPage = () => {
             </div>
             <div>
               <p className="font-medium text-[#0A3981]">E-Identification Number:</p>
-              <p className="text-xl font-semibold text-gray-900">{details.eIdentificationNumber}</p>
+              <p className="text-xl font-semibold text-gray-900">{details.eidentificationNumber}</p>
             </div>
             <div>
               <p className="font-medium text-[#0A3981]">Next Control Date:</p>
@@ -283,13 +287,13 @@ const SearchPage = () => {
             <button
               onClick={() => handleCreateCommon(`/vehicle/service-history/${details.idVehicle}`)}
               className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
-            >
+              >
               Service History
             </button>
             <button
               onClick={() => handleCreateCommon(`/vehicle/create-service/${details.idVehicle}`)}
-              className="px-6 py-2 border-2 border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition duration-300 ease-in-out"
-            >
+              className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
+             >
               New Service
             </button>
           </div>
