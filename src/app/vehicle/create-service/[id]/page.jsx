@@ -2,11 +2,11 @@
 import axios from 'axios';
 // pages/service-form.js
 import { useState } from 'react';
-import {useParams} from 'next/navigation'
+import { useParams } from 'next/navigation'
 
 export default function ServiceForm() {
-  
-    const {id} = useParams()
+
+    const { id } = useParams()
     const initialFormData = {
         serviceType: '',
         serviceDate: '',
@@ -67,6 +67,7 @@ export default function ServiceForm() {
 
 
     };
+    
 
     return (
         <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
@@ -147,7 +148,7 @@ export default function ServiceForm() {
                                 onChange={handleChange}
                                 placeholder="Enter vehicle ID"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#001A6E] focus:outline-none"
-                            disabled/>
+                                disabled />
                         </div>
                     </div>
 
@@ -178,7 +179,7 @@ export default function ServiceForm() {
                         </h3>
                         <p className="mt-2 text-gray-600">{popupMessage}</p>
                         <button
-                            onClick={() => setShowPopup(false)}
+                            onClick={handleRedirect} // Use handleRedirect to close the popup and redirect
                             className="mt-4 bg-[#EFB6C8] text-white py-2 px-4 rounded-md hover:bg-[#FFD2A0] transition duration-300"
                         >
                             OK

@@ -108,15 +108,11 @@ export default function SearchMobile() {
     }
   };
 
-  // Handle status change
-  const handleStatusChange = (e) => {
-    const newStatus = e.target.value;
-    setStatus(newStatus);
-  };
+
 
   // Handle adding a new activity
   const handleAddActivity = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
 
     try {
@@ -136,7 +132,18 @@ export default function SearchMobile() {
           },
         }
       );
-      setActivities([...activities, newActivity]);
+
+       // Update the status to completed
+       await axios.put(
+        `http://localhost:8080/api/v1/mobile/${mobileData.idMobile}/status?status=OUT`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // setActivities([...activities, newActivity]);
       setNewActivity(initialActivityData);
       setShowNewActivityForm(false); // Hide the new activity form after submission
     } catch (err) {
@@ -182,7 +189,6 @@ export default function SearchMobile() {
           },
         }
       );
-      setActivities([...activities, newActivityData]);
       setShowNewActivityForm(false); // Hide the form after the handover
     } catch (err) {
       setError("Failed to hand over mobile.");
@@ -192,6 +198,14 @@ export default function SearchMobile() {
   // Handle "New Assign" button click
   const handleNewAssign = () => {
     setShowNewActivityForm(true);
+    const newActivityData = {
+      activity: "Phone Hand Over to Employee",
+      person: "",
+      description: "",
+      activityStatus: "OUT",
+      idMobile: mobileData.idMobile,
+    };
+    setNewActivity(newActivityData)
   };
 
   return (

@@ -7,25 +7,26 @@ import { Company, Office, Vehicle } from "@/app/models/types";
 
 export default function CreateVehicle() {
 
-  const initialFormData ={
+  const initialFormData = {
+    idVehicle: "", 
     dateOfFirstCommissioning: "",
     acquisitionDate: "",
     registrationNo: "",
     vehicleCategory: "",
     brand: "",
     tradeDesignation: "",
-    eIdentificationNumber: "",
+    eidentificationNumber: "",  // Corrected field name
     color: "",
     emissionClass: "",
     co2Level: "",
     fuel: "",
     insuranceCompany: "",
     rearTireDimension: "",
-    idOffice:"",
-    idCompany:"",
-    dateOfControlCurrent:"",
-    dateOfControlNext:""
-  }
+    idOffice: "",
+    idCompany: "",
+    dateOfControlCurrent: "",
+    dateOfControlNext: ""
+  };
   // State for form fields
   const [formData, setFormData] = useState<Vehicle>(initialFormData);
 
@@ -156,9 +157,11 @@ export default function CreateVehicle() {
     <div className="min-h-screen flex flex-col bg-[#F9F6F1]">
       <main className="flex-grow flex justify-center items-start py-8 px-4">
         <div className="bg-white shadow-lg rounded-lg p-10 w-full max-w-7xl grid gap-6">
-          <h2 className="text-3xl font-bold text-[#001A6E] text-center mb-6">
-            Create Vehicle / Skapa Fordon
-          </h2>
+        <div className="mb-6">
+            <a href="/vehicle/search" className="text-blue-500 mb-2 inline-block">&larr; Back</a>
+            <h1 className="text-3xl font-semibold text-gray-700">Create Vehicle</h1>
+            <p className="text-gray-500">Fill in the details to create a new vehicle entry.</p>
+          </div>
 
           {/* Form Fields - 3x3 Grid Layout */}
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -296,7 +299,7 @@ export default function CreateVehicle() {
                 type="text"
                 id="eIdentificationNumber"
                 name="eIdentificationNumber"
-                value={formData.eIdentificationNumber}
+                value={formData.eidentificationNumber}
                 onChange={handleInputChange}
                 placeholder="Enter E-ID number / Ange E-ID nummer"
                 required

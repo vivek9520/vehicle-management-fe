@@ -9,15 +9,12 @@ export default function Home() {
   // Simulating user permissions
   const [permissions, setPermissions] = useState({
     canAccessVehicleManagement: true,
-    canAccessMobileManagement: false,
+    canAccessMobileManagement: true,
   });
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-[#001A6E] text-white text-center py-6">
-        <h1 className="text-3xl font-bold">Management Dashboard</h1>
-      </header>
+
 
       {/* Main Content */}
       <main className="flex flex-col items-center justify-center py-12">
@@ -56,7 +53,7 @@ export default function Home() {
           >
             {permissions.canAccessMobileManagement ? (
               <Link
-                href="/mobile-management"
+                href="/mobile/search"
                 className="text-xl font-semibold"
               >
                 Mobile Management
