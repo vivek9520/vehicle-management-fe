@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "@/app/components/Footer";
 import Header from "@/app/components/Header";
 
@@ -9,8 +9,9 @@ export default function CreateMobile() {
     mobileUniCode: "",
     mobileModel: "",
     idOffice: "",
-    status: "PENDING",
-    remark: "",
+    status: "Active",
+    mobileNumber: "",
+    subscriptionId: 1, // Default subscriptionId to 1 or any other value you prefer
   };
 
   // State for form fields
@@ -21,6 +22,11 @@ export default function CreateMobile() {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState(""); // success or error
   const [showPopup, setShowPopup] = useState(false);
+  const [mobileSubscription, setMobileSubscription] = useState([]);
+
+  useEffect(() => {
+    getMobileSubscription();
+  }, []);
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -70,13 +76,43 @@ export default function CreateMobile() {
     }
   };
 
+  const getMobileSubscription = async () => {
+    setIsLoading(true); // Show spinner
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/subscription/getAll", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setIsLoading(false); // Hide spinner after 1.5 seconds
+      if (response.ok) {
+        const data = await response.json(); // Extract the response data
+        setMobileSubscription(data.data);
+      } else {
+        setPopupMessage("Failed to load subscriptions.");
+        setPopupType("error");
+        setShowPopup(true);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      setPopupMessage("There was an error fetching subscriptions.");
+      setPopupType("error");
+      setShowPopup(true);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#F9F6F1]">
-      <main className="flex-grow flex justify-center items-start py-8 px-4">
-        <div className="bg-white shadow-lg rounded-lg p-10 w-full max-w-7xl grid gap-6">
-          <h2 className="text-3xl font-bold text-[#001A6E] text-center mb-6">
-            Create Mobile
-          </h2>
+    <div>
+      <main>
+        <div>
+          <div className="mb-6">
+            <h1 className="text-3xl font-semibold text-gray-400">Create Mobile</h1>
+          </div>
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div>
@@ -139,26 +175,48 @@ export default function CreateMobile() {
                 required
                 className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
               >
-                <option value="PENDING">Pending</option>
-                <option value="APPROVED">Approved</option>
-                <option value="REJECTED">Rejected</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
               </select>
             </div>
 
-            <div className="sm:col-span-2">
-              <label htmlFor="remark" className="block font-medium text-[#001A6E]">
-                Remark
+            <div>
+              <label htmlFor="mobileNumber" className="block font-medium text-[#001A6E]">
+                Mobile Number
               </label>
-              <textarea
-                id="remark"
-                name="remark"
-                value={formData.remark}
+              <input
+                type="text"
+                id="mobileNumber"
+                name="mobileNumber"
+                value={formData.mobileNumber}
                 onChange={handleInputChange}
-                placeholder="Enter remark"
+                placeholder="Enter mobile number"
                 required
                 className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              ></textarea>
+              />
             </div>
+
+            <div>
+  <label htmlFor="subscriptionId" className="block font-medium text-[#001A6E]">
+    Subscription ID
+  </label>
+  <select
+    id="subscriptionId"
+    name="subscriptionId"
+    value={formData.subscriptionId}
+    onChange={handleInputChange}
+    required
+    className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+  >
+    <option value="">Select a subscription</option>
+    {mobileSubscription.map((subscription) => (
+      <option key={subscription.idMobileSubscription} value={subscription.idMobileSubscription}>
+        {subscription.subscriptionName} - {subscription.fee} SEK
+      </option>
+    ))}
+  </select>
+</div>
+
 
             <div className="col-span-full flex justify-center mt-6">
               <button
@@ -181,9 +239,7 @@ export default function CreateMobile() {
       {showPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-            <h3
-              className={`text-lg font-bold ${popupType === "success" ? "text-green-500" : "text-red-500"}`}
-            >
+            <h3 className={`text-lg font-bold ${popupType === "success" ? "text-green-500" : "text-red-500"}`}>
               {popupType === "success" ? "Success" : "Error"}
             </h3>
             <p className="mt-2 text-gray-600">{popupMessage}</p>

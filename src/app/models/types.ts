@@ -40,4 +40,11 @@ export interface Office {
       description:string,
       VehicleInfoL:Vehicle
   }
+
+  export interface Subscription{
+    idMobileSubscription: string,
+    subscriptionName: string,
+    fee: string
+    
+}
   

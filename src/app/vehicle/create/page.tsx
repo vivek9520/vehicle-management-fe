@@ -154,345 +154,331 @@ export default function CreateVehicle() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F9F6F1]">
-      <main className="flex-grow flex justify-center items-start py-8 px-4">
-        <div className="bg-white shadow-lg rounded-lg p-10 w-full max-w-7xl grid gap-6">
-        <div className="mb-6">
-            <a href="/vehicle/search" className="text-blue-500 mb-2 inline-block">&larr; Back</a>
-            <h1 className="text-3xl font-semibold text-gray-700">Create Vehicle</h1>
-            <p className="text-gray-500">Fill in the details to create a new vehicle entry.</p>
-          </div>
+<div>
+  <main >
+    <div >
+      <div className="mb-6">
+        <h1 className="text-3xl font-semibold text-gray-400">Create Vehicle</h1>
+        
+      </div>
 
-          {/* Form Fields - 3x3 Grid Layout */}
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            <div>
-              <label htmlFor="dateOfFirstCommissioning" className="block font-medium text-[#001A6E]">
-                Date of First Commissioning / Datum för första användning
-              </label>
-              <input
-                type="date"
-                id="dateOfFirstCommissioning"
-                name="dateOfFirstCommissioning"
-                value={formData.dateOfFirstCommissioning}
-                onChange={handleInputChange}
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="acquisitionDate" className="block font-medium text-[#001A6E]">
-                Acquisition Date / Förvärvsdatum
-              </label>
-              <input
-                type="date"
-                id="acquisitionDate"
-                name="acquisitionDate"
-                value={formData.acquisitionDate}
-                onChange={handleInputChange}
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="registrationNo" className="block font-medium text-[#001A6E]">
-                Registration Number / Registreringsnummer
-              </label>
-              <input
-                type="text"
-                id="registrationNo"
-                name="registrationNo"
-                value={formData.registrationNo}
-                onChange={handleInputChange}
-                placeholder="Enter registration number / Ange registreringsnummer"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="vehicleCategory" className="block font-medium text-[#001A6E]">
-                Vehicle Category / Fordonskategori
-              </label>
-              <input
-                type="text"
-                id="vehicleCategory"
-                name="vehicleCategory"
-                value={formData.vehicleCategory}
-                onChange={handleInputChange}
-                placeholder="Enter vehicle category / Ange fordonskategori"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="brand" className="block font-medium text-[#001A6E]">
-                Brand / Märke
-              </label>
-              <input
-                type="text"
-                id="brand"
-                name="brand"
-                value={formData.brand}
-                onChange={handleInputChange}
-                placeholder="Enter brand / Ange märke"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            
-            <div>
-              <label htmlFor="dateOfControlCurrent" className="block font-medium text-[#001A6E]">
-              Control Current Date / Förvärvsdatum
-              </label>
-              <input
-                type="date"
-                id="dateOfControlCurrent"
-                name="dateOfControlCurrent"
-                value={formData.dateOfControlCurrent}
-                onChange={handleInputChange}
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            
-            <div>
-              <label htmlFor="dateOfControlNext" className="block font-medium text-[#001A6E]">
-             Control Next Date / Förvärvsdatum
-              </label>
-              <input
-                type="date"
-                id="dateOfControlNext"
-                name="dateOfControlNext"
-                value={formData.dateOfControlNext}
-                onChange={handleInputChange}
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="tradeDesignation" className="block font-medium text-[#001A6E]">
-                Trade Designation / Yrkesbenämning
-              </label>
-              <input
-                type="text"
-                id="tradeDesignation"
-                name="tradeDesignation"
-                value={formData.tradeDesignation}
-                onChange={handleInputChange}
-                placeholder="Enter trade designation / Ange yrkesbenämning"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="eIdentificationNumber" className="block font-medium text-[#001A6E]">
-                E-Identification Number / E-ID Nummer
-              </label>
-              <input
-                type="text"
-                id="eIdentificationNumber"
-                name="eIdentificationNumber"
-                value={formData.eidentificationNumber}
-                onChange={handleInputChange}
-                placeholder="Enter E-ID number / Ange E-ID nummer"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-            <div>
-      {/* Company Dropdown */}
-      <label htmlFor="company" className="block font-medium text-[#001A6E]">
-        Company / Företag
-      </label>
-      <select
-        id="company"
-        name="company"
-      
-        onChange={handleCompanyChange}
-        required
-        className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-      >
-        <option value="">Select Company</option>
-        {/* Dynamically generate options from the companies list */}
-        {companies.map((company) => (
-          <option key={company.idCompany} value={company.idCompany}>
-            {company.companyName}  {/* Display the company name */}
-          </option>
-        ))}
-      </select>
-
-      {/* Office Dropdown (conditional on company selection) */}
-      {formData.idCompany && (
+      {/* Form Fields - 4x4 Grid Layout */}
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* Date of First Commissioning */}
         <div>
-          <label htmlFor="office" className="block font-medium text-[#001A6E]">
-            Office / Kontor
+          <label htmlFor="dateOfFirstCommissioning" className="block font-medium text-[#001A6E]">
+            Date of First Commissioning
+          </label>
+          <input
+            type="date"
+            id="dateOfFirstCommissioning"
+            name="dateOfFirstCommissioning"
+            value={formData.dateOfFirstCommissioning}
+            onChange={handleInputChange}
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Acquisition Date */}
+        <div>
+          <label htmlFor="acquisitionDate" className="block font-medium text-[#001A6E]">
+            Acquisition Date
+          </label>
+          <input
+            type="date"
+            id="acquisitionDate"
+            name="acquisitionDate"
+            value={formData.acquisitionDate}
+            onChange={handleInputChange}
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Registration Number */}
+        <div>
+          <label htmlFor="registrationNo" className="block font-medium text-[#001A6E]">
+            Registration Number
+          </label>
+          <input
+            type="text"
+            id="registrationNo"
+            name="registrationNo"
+            value={formData.registrationNo}
+            onChange={handleInputChange}
+            placeholder="Enter registration number"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Vehicle Category */}
+        <div>
+          <label htmlFor="vehicleCategory" className="block font-medium text-[#001A6E]">
+            Vehicle Category
+          </label>
+          <input
+            type="text"
+            id="vehicleCategory"
+            name="vehicleCategory"
+            value={formData.vehicleCategory}
+            onChange={handleInputChange}
+            placeholder="Enter vehicle category"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Brand */}
+        <div>
+          <label htmlFor="brand" className="block font-medium text-[#001A6E]">
+            Brand
+          </label>
+          <input
+            type="text"
+            id="brand"
+            name="brand"
+            value={formData.brand}
+            onChange={handleInputChange}
+            placeholder="Enter brand"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Control Current Date */}
+        <div>
+          <label htmlFor="dateOfControlCurrent" className="block font-medium text-[#001A6E]">
+            Control Current Date
+          </label>
+          <input
+            type="date"
+            id="dateOfControlCurrent"
+            name="dateOfControlCurrent"
+            value={formData.dateOfControlCurrent}
+            onChange={handleInputChange}
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Control Next Date */}
+        <div>
+          <label htmlFor="dateOfControlNext" className="block font-medium text-[#001A6E]">
+            Control Next Date
+          </label>
+          <input
+            type="date"
+            id="dateOfControlNext"
+            name="dateOfControlNext"
+            value={formData.dateOfControlNext}
+            onChange={handleInputChange}
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Trade Designation */}
+        <div>
+          <label htmlFor="tradeDesignation" className="block font-medium text-[#001A6E]">
+            Trade Designation
+          </label>
+          <input
+            type="text"
+            id="tradeDesignation"
+            name="tradeDesignation"
+            value={formData.tradeDesignation}
+            onChange={handleInputChange}
+            placeholder="Enter trade designation"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* E-Identification Number */}
+        <div>
+          <label htmlFor="eIdentificationNumber" className="block font-medium text-[#001A6E]">
+            E-Identification Number
+          </label>
+          <input
+            type="text"
+            id="eidentificationNumber"
+            name="eidentificationNumber"
+            value={formData.eidentificationNumber}
+            onChange={handleInputChange}
+            placeholder="Enter E-ID number"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Company Dropdown */}
+        <div>
+          <label htmlFor="company" className="block font-medium text-[#001A6E]">
+            Company
           </label>
           <select
-            id="office"
-            name="office"
-            value={formData.idOffice}
-            onChange={handleOfficeChange}
+            id="company"
+            name="company"
+            onChange={handleCompanyChange}
             required
             className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
           >
-            <option value="">Select Office</option>
-            {/* Dynamically generate office options based on selected company */}
-            {offices.map((office) => (
-              <option key={office.idOffice} value={office.idOffice}>
-                {office.officeName}  {/* Display the office name */}
+            <option value="">Select Company</option>
+            {companies.map((company) => (
+              <option key={company.idCompany} value={company.idCompany}>
+                {company.companyName}
               </option>
             ))}
           </select>
         </div>
-      )}
-    </div>
 
-            <div>
-              <label htmlFor="color" className="block font-medium text-[#001A6E]">
-                Color / Färg
-              </label>
-              <input
-                type="text"
-                id="color"
-                name="color"
-                value={formData.color}
-                onChange={handleInputChange}
-                placeholder="Enter color / Ange färg"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="emissionClass" className="block font-medium text-[#001A6E]">
-                Emission Class / Utsläppsklass
-              </label>
-              <input
-                type="text"
-                id="emissionClass"
-                name="emissionClass"
-                value={formData.emissionClass}
-                onChange={handleInputChange}
-                placeholder="Enter emission class / Ange utsläppsklass"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="co2Level" className="block font-medium text-[#001A6E]">
-                CO2 Level / CO2 Nivå
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                id="co2Level"
-                name="co2Level"
-                value={formData.co2Level}
-                onChange={handleInputChange}
-                placeholder="Enter CO2 level / Ange CO2 nivå"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="fuel" className="block font-medium text-[#001A6E]">
-                Fuel / Bränsle
-              </label>
-              <select
-                id="fuel"
-                name="fuel"
-                value={formData.fuel}
-                onChange={handleInputChange}
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              >
-                <option value="">Select fuel / Välj bränsle</option>
-                <option value="petrol">Petrol / Bensin</option>
-                <option value="diesel">Diesel</option>
-                <option value="electric">Electric / El</option>
-                <option value="hybrid">Hybrid</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="rearTireDimension" className="block font-medium text-[#001A6E]">
-                Rear Tire Dimension / Bakdäcksdimension
-              </label>
-              <input
-                type="text"
-                id="rearTireDimension"
-                name="rearTireDimension"
-                value={formData.rearTireDimension}
-                onChange={handleInputChange}
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-                placeholder="Enter rear tire dimension (e.g., 205/55R16)"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="insuranceCompany" className="block font-medium text-[#001A6E]">
-                Insurance Company / Försäkringsbolag
-              </label>
-              <input
-                type="text"
-                id="insuranceCompany"
-                name="insuranceCompany"
-                value={formData.insuranceCompany}
-                onChange={handleInputChange}
-                placeholder="Enter insurance company / Ange försäkringsbolag"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div className="col-span-full flex justify-center mt-6">
-              <button
-                type="submit"
-                className={`flex items-center justify-center bg-[#001A6E] text-white py-3 px-6 rounded-md font-bold transition duration-300 ${isLoading ? "cursor-not-allowed opacity-70" : "hover:bg-[#D997A5]"}`}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <span className="animate-spin">Loading...</span>
-                ) : (
-                  "Submit / Skicka"
-                )}
-              </button>
-            </div>
-          </form>
-
-        </div>
-      </main>
-      {/* Popup */}
-      {showPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-            <h3
-              className={`text-lg font-bold ${popupType === "success" ? "text-green-500" : "text-red-500"
-                }`}
+        {/* Office Dropdown (Conditional on Company Selection) */}
+        {formData.idCompany && (
+          <div>
+            <label htmlFor="office" className="block font-medium text-[#001A6E]">
+              Office
+            </label>
+            <select
+              id="office"
+              name="office"
+              value={formData.idOffice}
+              onChange={handleOfficeChange}
+              required
+              className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
             >
-              {popupType === "success" ? "Success" : "Error"}
-            </h3>
-            <p className="mt-2 text-gray-600">{popupMessage}</p>
-            <button
-              onClick={() => setShowPopup(false)}
-              className="mt-4 bg-[#EFB6C8] text-white py-2 px-4 rounded-md hover:bg-[#FFD2A0] transition duration-300"
-            >
-              OK
-            </button>
+              <option value="">Select Office</option>
+              {offices.map((office) => (
+                <option key={office.idOffice} value={office.idOffice}>
+                  {office.officeName}
+                </option>
+              ))}
+            </select>
           </div>
+        )}
+
+        {/* Color */}
+        <div>
+          <label htmlFor="color" className="block font-medium text-[#001A6E]">
+            Color
+          </label>
+          <input
+            type="text"
+            id="color"
+            name="color"
+            value={formData.color}
+            onChange={handleInputChange}
+            placeholder="Enter color"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
         </div>
-      )}
+
+        {/* Emission Class */}
+        <div>
+          <label htmlFor="emissionClass" className="block font-medium text-[#001A6E]">
+            Emission Class
+          </label>
+          <input
+            type="text"
+            id="emissionClass"
+            name="emissionClass"
+            value={formData.emissionClass}
+            onChange={handleInputChange}
+            placeholder="Enter emission class"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* CO2 Level */}
+        <div>
+          <label htmlFor="co2Level" className="block font-medium text-[#001A6E]">
+            CO2 Level
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            id="co2Level"
+            name="co2Level"
+            value={formData.co2Level}
+            onChange={handleInputChange}
+            placeholder="Enter CO2 level"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Fuel */}
+        <div>
+          <label htmlFor="fuel" className="block font-medium text-[#001A6E]">
+            Fuel / Bränsle
+          </label>
+          <select
+            id="fuel"
+            name="fuel"
+            value={formData.fuel}
+            onChange={handleInputChange}
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          >
+            <option value="">Select fuel</option>
+            <option value="petrol">Petrol</option>
+            <option value="diesel">Diesel</option>
+            <option value="electric">Electric</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+
+        {/* Rear Tire Dimension */}
+        <div>
+          <label htmlFor="rearTireDimension" className="block font-medium text-[#001A6E]">
+            Rear Tire Dimension
+          </label>
+          <input
+            type="text"
+            id="rearTireDimension"
+            name="rearTireDimension"
+            value={formData.rearTireDimension}
+            onChange={handleInputChange}
+            placeholder="Enter rear tire dimension"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        {/* Insurance Company */}
+        <div>
+          <label htmlFor="insuranceCompany" className="block font-medium text-[#001A6E]">
+            Insurance Company
+          </label>
+          <input
+            type="text"
+            id="insuranceCompany"
+            name="insuranceCompany"
+            value={formData.insuranceCompany}
+            onChange={handleInputChange}
+            placeholder="Enter insurance company"
+            required
+            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+          />
+        </div>
+
+        <div className="col-span-full flex justify-center mt-0">
+        <button
+            type="submit"
+            className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
+            disabled={isLoading}
+          >
+            {isLoading ? <span className="animate-spin">Loading...</span> : "Submit"}
+          </button>
+        </div>
+      </form>
     </div>
+  </main>
+</div>
+
   );
 }
 
