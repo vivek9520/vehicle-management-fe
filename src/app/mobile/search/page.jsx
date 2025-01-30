@@ -1,416 +1,200 @@
-"use client";
+'use client'; // Ensure this component is client-side
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Footer from "@/app/components/Footer";
-import Header from "@/app/components/Header";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-export default function SearchMobile() {
-  const initialFormData = {
-    mobileUniCode: "",
-  };
+const SearchPage = () => {
+  const [uniCode, setUniCode] = useState('');
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [office, setOffice] = useState(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const router = useRouter();
 
-  const initialActivityData = {
-    activity: "",
-    person: "",
-    description: "",
-    activityStatus: "",
-    idMobile: '',
-  };
+  const handleSearch = async () => {
+    if (!uniCode) return;
 
-  // State for form fields
-  const [formData, setFormData] = useState(initialFormData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [mobileData, setMobileData] = useState(null); // Initially no data
-  const [activities, setActivities] = useState([]); // Initially no activities
-  const [newActivity, setNewActivity] = useState(initialActivityData);
-  const [status, setStatus] = useState("");
-  const [error, setError] = useState("");
-  const [showNewActivityForm, setShowNewActivityForm] = useState(false);
+    setLoading(true);
+    setError(null);
 
-  // Fetch mobile activities when mobile data is loaded
-  useEffect(() => {
-    if (mobileData && mobileData.idMobile) {
-      fetchActivities(mobileData.idMobile);
-    }
-  }, [mobileData]);
-
-  const fetchActivities = async (idMobile) => {
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setError("Authentication token is missing.");
-        return;
-      }
-
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/mobile/activity/by-mobile/${idMobile}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setActivities(response.data.content);
-    } catch (err) {
-      setError("Failed to fetch activities.");
-    }
-  };
-
-  // Handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleActivityChange = (e) => {
-    const { name, value } = e.target;
-    setNewActivity({
-      ...newActivity,
-      [name]: value,
-    });
-  };
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem('authToken');
     if (!token) {
-      setError("Authentication token is missing.");
-      setIsLoading(false); // Hide spinner on error
+      setError('Authentication token is missing.');
+      setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/mobile/get-by-code?uniCode=${formData.mobileUniCode}`,
+      const response = await fetch(
+        `http://localhost:8080/api/v1/mobile/get-by-code?uniCode=${uniCode}`,
         {
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
         }
       );
-      const { data } = response.data;
-      setMobileData(data);
-      setStatus(data.status); // Update the status from the response
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDetails(data.data);
+        getOfficeDetails(data.data.idOffice);
+      } else {
+        setError(data.message || 'Error fetching details');
+        setDetails(null);
+      }
     } catch (err) {
-      setMobileData("");
-      setStatus("");
-      setActivities("");
-      setError("Failed to fetch mobile details.");
+      setError('Error fetching details');
+      setDetails(null);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-
-
-  // Handle adding a new activity
-  const handleAddActivity = async (e) => {
-    // e.preventDefault();
-
-
+  const getOfficeDetails = async (id) => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setError('Authentication token is missing.');
+      return;
+    }
     try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setError("Authentication token is missing.");
-        return;
+      const result = await axios.get(`http://localhost:8080/api/v1/office?officeId=${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (result.status === 200) {
+        setOffice(result.data.data);
       }
-
-      // Call the save activity API
-      await axios.post(
-        "http://localhost:8080/api/v1/mobile/activity/save",
-        newActivity,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-       // Update the status to completed
-       await axios.put(
-        `http://localhost:8080/api/v1/mobile/${mobileData.idMobile}/status?status=OUT`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // setActivities([...activities, newActivity]);
-      setNewActivity(initialActivityData);
-      setShowNewActivityForm(false); // Hide the new activity form after submission
-    } catch (err) {
-      setError("Failed to add new activity.");
+    } catch (error) {
+      setError('Error fetching office details');
     }
   };
 
-  // Handle 'Hand Over' button click
-  const handleHandOver = async () => {
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setError("Authentication token is missing.");
-        return;
-      }
-
-      // Update the status to completed
-      await axios.put(
-        `http://localhost:8080/api/v1/mobile/${mobileData.idMobile}/status?status=IN`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Add a new activity for Hand Over
-      const newActivityData = {
-        activity: "Vehicle Inspection",
-        person: "John Doe",
-        description: "Conducted a routine inspection of the vehicle's engine and brakes.",
-        activityStatus: "IN",
-        idMobile: mobileData.idMobile,
-      };
-
-      await axios.post(
-        "http://localhost:8080/api/v1/mobile/activity/save",
-        newActivityData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setShowNewActivityForm(false); // Hide the form after the handover
-    } catch (err) {
-      setError("Failed to hand over mobile.");
-    }
+  const handleCreateCommon = async (url) => {
+    setButtonLoading(true);
+    router.push(url);
+    setButtonLoading(false);
   };
 
-  // Handle "New Assign" button click
-  const handleNewAssign = () => {
-    setShowNewActivityForm(true);
-    const newActivityData = {
-      activity: "Phone Hand Over to Employee",
-      person: "",
-      description: "",
-      activityStatus: "OUT",
-      idMobile: mobileData.idMobile,
-    };
-    setNewActivity(newActivityData)
+  const filterDetails = (details) => {
+    const excludedFields = [
+      'createdDate',
+      'modifiedDate',
+      'createdBy',
+      'lastModifiedBy',
+      'idMobile',
+      'idOffice',
+    ];
+    return Object.entries(details).filter(([key]) => !excludedFields.includes(key));
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F9F6F1]">
-      <main className="flex-grow flex justify-center items-start py-8 px-4">
-        <div className="bg-white shadow-lg rounded-lg p-10 w-full max-w-7xl grid gap-6">
-          <h2 className="text-3xl font-bold text-[#001A6E] text-center mb-6">
-            Search Mobile by UniCode
-          </h2>
+    <div>
+      {/* Section Title */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-semibold text-gray-400">Mobile Search</h1>
+      </div>
 
-          <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            <div>
-              <label htmlFor="mobileUniCode" className="block font-medium text-[#001A6E]">
-                Mobile UniCode
-              </label>
-              <input
-                type="text"
-                id="mobileUniCode"
-                name="mobileUniCode"
-                value={formData.mobileUniCode}
-                onChange={handleInputChange}
-                placeholder="Enter mobile unique code"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
+      {/* Search Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mb-6">
+        <div className="flex space-x-4">
+          <input
+            type="text"
+            placeholder="Enter Mobile UniCode"
+            value={uniCode}
+            onChange={(e) => setUniCode(e.target.value)}
+            className="p-3 border rounded-lg shadow-md w-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+          >
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+        </div>
+      </div>
 
-            <div className="col-span-full flex justify-center mt-6">
-              <button
-                type="submit"
-                className={`flex items-center justify-center bg-[#001A6E] text-white py-3 px-6 rounded-md font-bold transition duration-300 ${isLoading ? "cursor-not-allowed opacity-70" : "hover:bg-[#074799]"}`}
-                disabled={isLoading}
-              >
-                {isLoading ? <span className="animate-spin">Loading...</span> : "Search"}
-              </button>
-            </div>
-          </form>
+      {/* Error Message */}
+      {error && <div className="bg-red-100 p-2 rounded-lg text-red-500">{error}</div>}
 
-          {/* Error Message */}
-          {error && (
-            <div className="mt-6 p-4 bg-red-100 border border-red-300 text-red-500 rounded-md">
-              <p>{error}</p>
-            </div>
-          )}
-
-          {/* Mobile Data Display */}
-          {mobileData && (
-            <div className="mt-6 p-6 border border-[#A888B5] rounded-lg shadow-lg bg-white">
-              <h3 className="text-2xl font-bold text-[#001A6E] mb-6 text-center">Mobile Details</h3>
-
-              <div className="grid grid-cols-2 gap-6 text-gray-700">
-                <div>
-                  <p className="font-medium"><strong>UniCode:</strong> {mobileData.mobileUniCode}</p>
-                </div>
-                <div>
-                  <p className="font-medium"><strong>Model:</strong> {mobileData.mobileModel}</p>
-                </div>
-                <div>
-                  <p className="font-medium"><strong>Office ID:</strong> {mobileData.idOffice}</p>
-                </div>
-                <div>
-                  <p className="font-medium"><strong>Status:</strong> {mobileData.status}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="font-medium"><strong>Remark:</strong> {mobileData.remark}</p>
-                </div>
-              </div>
-
-              <div className="mt-8 flex justify-center gap-4">
-                {status === "IN" && (
-                  <button
-                    className="bg-[#001A6E] text-white py-2 px-6 rounded-lg shadow-md hover:bg-[#074799] focus:outline-none focus:ring-2 focus:ring-green-300 transition-all duration-300"
-                    onClick={handleNewAssign}
-                  >
-                    New Assign
-                  </button>
-                )}
-                {status === "OUT" && (
-                  <button
-                    className="bg-[#001A6E] text-white py-2 px-6 rounded-lg shadow-md hover:bg-[#074799] focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300"
-                    onClick={handleHandOver}
-                  >
-                    Hand Over
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
-
-          {/* Show New Activity Form if New Assign button is clicked */}
-          {showNewActivityForm && mobileData && (
-            <div className="mt-6 p-4 bg-gray-100 border border-[#A888B5] rounded-md">
-              <h3 className="text-xl font-bold text-[#001A6E]">Add New Activity:</h3>
-              <form onSubmit={handleAddActivity}>
-                <div className="mt-4">
-                  <label htmlFor="activity" className="block font-medium text-[#001A6E]">Activity</label>
-                  <input
-                    type="text"
-                    id="activity"
-                    name="activity"
-                    value={newActivity.activity}
-                    onChange={handleActivityChange}
-                    required
-                    className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm"
-                  />
-                </div>
-                <div className="mt-4">
-                  <label htmlFor="remark" className="block font-medium text-[#001A6E]">Remark</label>
-                  <textarea
-                    id="remark"
-                    name="remark"
-                    value={newActivity.remark}
-                    onChange={handleActivityChange}
-                    required
-                    className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm"
-                  ></textarea>
-                </div>
-                <div className="mt-4">
-                  <label htmlFor="person" className="block font-medium text-[#001A6E]">Person</label>
-                  <input
-                    type="text"
-                    id="person"
-                    name="person"
-                    value={newActivity.person}
-                    onChange={handleActivityChange}
-                    required
-                    className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm"
-                  />
-                </div>
-                <div className="mt-4">
-                  <label htmlFor="description" className="block font-medium text-[#001A6E]">Description</label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={newActivity.description}
-                    onChange={handleActivityChange}
-                    required
-                    className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm"
-                  ></textarea>
-                </div>
-                <div className="mt-4">
-                  <label htmlFor="activityStatus" className="block font-medium text-[#001A6E]">Activity Status</label>
-                  <select
-                    id="activityStatus"
-                    name="activityStatus"
-                    value={newActivity.activityStatus}
-                    onChange={handleActivityChange}
-                    required
-                    className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm"
-                  >
-                    <option value="IN">IN</option>
-                    <option value="OUT">OUT</option>
-                  </select>
-                </div>
-                <input type="hidden" name="idMobile" value={mobileData.idMobile} />
-                <div className="mt-4 flex justify-center">
-                  <button
-                    type="submit"
-                    className="bg-[#001A6E] text-white py-2 px-6 rounded-md font-bold transition duration-300 hover:bg-[#074799]"
-                  >
-                    Add Activity
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-
-
-          {/* Activity Table */}
-          {activities.length > 0 && (
-            <div className="mt-6 bg-white shadow-lg rounded-lg p-6">
-              <h3 className="text-2xl font-bold text-[#001A6E] mb-6 text-center">Activity History</h3>
-              <table className="min-w-full table-auto">
+      {/* Mobile Details Table */}
+      {details && (
+        <div className="bg-white shadow rounded-lg p-6 mt-6">
+          <h2 className="text-xl font-medium text-gray-700 mb-4">Mobile Details</h2>
+          <div className="overflow-x-auto">
+            <div className="overflow-y-auto max-h-64 border rounded-lg">
+              <table className="table-auto w-full border-collapse border border-gray-200">
                 <thead>
-                  <tr>
-                    <th className="px-4 py-2 border-b text-left">Activity</th>
-                    <th className="px-4 py-2 border-b text-left">Person</th>
-                    <th className="px-4 py-2 border-b text-left">Description</th>
-                    <th className="px-4 py-2 border-b text-left">Status</th>
-                    <th className="px-4 py-2 border-b text-left">Created Date</th>
-                    <th className="px-4 py-2 border-b text-left">Modified Date</th>
-                    <th className="px-4 py-2 border-b text-left">Created By</th>
+                  <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th className="py-3 px-4 text-left sticky top-0 bg-gray-100 border-b border-gray-200">Details</th>
+                    <th className="py-3 px-4 text-left sticky top-0 bg-gray-100 border-b border-gray-200">Value</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {activities.map((activity, index) => (
-                    <tr key={activity.idMobileActivity} className="hover:bg-gray-100">
-                      <td className="px-4 py-2 border-b">{activity.activity}</td>
-                      <td className="px-4 py-2 border-b">{activity.person}</td>
-                      <td className="px-4 py-2 border-b">{activity.description}</td>
-                      <td className="px-4 py-2 border-b">{activity.activityStatus}</td>
-                      <td className="px-4 py-2 border-b">{new Date(activity.createdDate).toLocaleString()}</td>
-                      <td className="px-4 py-2 border-b">{new Date(activity.modifiedDate).toLocaleString()}</td>
-                      <td className="px-4 py-2 border-b">{activity.createdBy}</td>
+                <tbody className="text-gray-600 text-sm">
+                  {filterDetails(details).map(([key, value], index) => (
+                    <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+                      <td className="py-3 px-4 font-medium capitalize">
+                        {key.replace(/([A-Z])/g, ' $1')}
+                      </td>
+                      <td className="py-3 px-4">
+                        {typeof value === 'object' && value !== null ? (
+                          // Display subscriptionName and fee in a "Name - Fee" format
+                          <div className="flex items-center space-x-2">
+                            <span className="font-semibold">{value.subscriptionName || 'N/A'}</span>
+                            <span>-</span>
+                            <span>{value.fee ? `${value.fee} SEK` : 'N/A'}</span> {/* You can format the fee as needed */}
+                          </div>
+                        ) : (
+                          value || 'N/A'
+                        )}
+                      </td>
                     </tr>
                   ))}
+                  {office && (
+                    <tr className="border-b border-gray-200 hover:bg-gray-100">
+                      <td className="py-3 px-4 font-medium">Office Name</td>
+                      <td className="py-3 px-4">{office.officeName || 'N/A'}</td>
+                    </tr>
+                  )}
                 </tbody>
+
+
               </table>
             </div>
-          )}
-
+          </div>
         </div>
-      </main>
+      )}
+
+      {/* New Buttons Section */}
+      {details && (
+        <div className="flex justify-end mt-6 space-x-4">
+          <button
+            onClick={() => handleCreateCommon(`/mobile/service-history/${details.idMobile}`)}
+            className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
+          >
+            {buttonLoading ? (
+              <span className="spinner-border animate-spin inline-block w-4 h-4 border-2 border-t-2 border-[#0A3981] rounded-full"></span>
+            ) : (
+              'Service History'
+            )}
+          </button>
+          <button
+            onClick={() => handleCreateCommon(`/mobile/create-service/${details.idMobile}`)}
+            className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
+          >
+            {buttonLoading ? (
+              <span className="spinner-border animate-spin inline-block w-4 h-4 border-2 border-t-2 border-[#0A3981] rounded-full"></span>
+            ) : (
+              'New Service'
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default SearchPage;

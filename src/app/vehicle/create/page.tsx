@@ -155,11 +155,10 @@ export default function CreateVehicle() {
 
   return (
 <div>
-  <main >
-    <div >
+  <main>
+    <div>
       <div className="mb-6">
         <h1 className="text-3xl font-semibold text-gray-400">Create Vehicle</h1>
-        
       </div>
 
       {/* Form Fields - 4x4 Grid Layout */}
@@ -176,7 +175,7 @@ export default function CreateVehicle() {
             value={formData.dateOfFirstCommissioning}
             onChange={handleInputChange}
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -192,7 +191,7 @@ export default function CreateVehicle() {
             value={formData.acquisitionDate}
             onChange={handleInputChange}
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -209,7 +208,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter registration number"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -226,7 +225,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter vehicle category"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -243,7 +242,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter brand"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -259,7 +258,7 @@ export default function CreateVehicle() {
             value={formData.dateOfControlCurrent}
             onChange={handleInputChange}
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -275,7 +274,7 @@ export default function CreateVehicle() {
             value={formData.dateOfControlNext}
             onChange={handleInputChange}
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -292,7 +291,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter trade designation"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -309,7 +308,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter E-ID number"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -323,7 +322,7 @@ export default function CreateVehicle() {
             name="company"
             onChange={handleCompanyChange}
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           >
             <option value="">Select Company</option>
             {companies.map((company) => (
@@ -346,7 +345,7 @@ export default function CreateVehicle() {
               value={formData.idOffice}
               onChange={handleOfficeChange}
               required
-              className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+              className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
               <option value="">Select Office</option>
               {offices.map((office) => (
@@ -371,7 +370,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter color"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -388,7 +387,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter emission class"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -406,7 +405,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter CO2 level"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -421,7 +420,7 @@ export default function CreateVehicle() {
             value={formData.fuel}
             onChange={handleInputChange}
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           >
             <option value="">Select fuel</option>
             <option value="petrol">Petrol</option>
@@ -444,7 +443,7 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter rear tire dimension"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -461,12 +460,13 @@ export default function CreateVehicle() {
             onChange={handleInputChange}
             placeholder="Enter insurance company"
             required
-            className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+            className="p-3 border rounded-lg shadow-md w-full mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
-        <div className="col-span-full flex justify-center mt-0">
-        <button
+        {/* Submit Button */}
+        <div className="col-span-full flex justify-center mt-6">
+          <button
             type="submit"
             className="px-6 py-2 border-2 border-[#0A3981] text-[#0A3981] rounded-md hover:bg-[#D4EBF8] hover:text-[#0A3981] transition duration-300 ease-in-out"
             disabled={isLoading}
@@ -478,6 +478,7 @@ export default function CreateVehicle() {
     </div>
   </main>
 </div>
+
 
   );
 }

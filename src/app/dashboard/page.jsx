@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import SearchPage from '../vehicle/search/page';
 import CreateVehicle from '../vehicle/create/page';
 import CreateMobile from '../mobile/create/page';
+import SearchMobile from '../mobile/search/page';
 import { Car, Smartphone, Users } from 'lucide-react';
 
 export default function Dashboard() {
@@ -96,7 +97,7 @@ export default function Dashboard() {
           <div className="mt-6 bg-white shadow-lg rounded-lg p-6">
             {activeTab === 'Search Vehicle' && <SearchPage />}
             {activeTab === 'Add Vehicle' && <CreateVehicle />}
-            {activeTab === 'Search Phone' && <p>Phone Search Form/Content</p>}
+            {activeTab === 'Search Phone' && <SearchMobile/>}
             {activeTab === 'Add Phone' && <CreateMobile/>}
             {activeTab === 'Search Employee' && <p>Employee Search Form/Content</p>}
             {activeTab === 'Add Employee' && <p>Employee Add Form/Content</p>}

@@ -1,47 +1,113 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Footer from "@/app/components/Footer";
-import Header from "@/app/components/Header";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export default function CreateMobile() {
   const initialFormData = {
     mobileUniCode: "",
     mobileModel: "",
     idOffice: "",
-    status: "Active",
+    status: "AVAIBLE",
     mobileNumber: "",
-    subscriptionId: 1, // Default subscriptionId to 1 or any other value you prefer
+    subscriptionId: "",
   };
 
-  // State for form fields
   const [formData, setFormData] = useState(initialFormData);
-
-  // State for handling spinner and popup
+  const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
-  const [popupType, setPopupType] = useState(""); // success or error
+  const [popupType, setPopupType] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [mobileSubscription, setMobileSubscription] = useState([]);
+  const [companies, setCompanies] = useState([]);
 
   useEffect(() => {
     getMobileSubscription();
+    getCompanyOffices();
   }, []);
 
-  // Handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const getCompanyOffices = async () => {
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/company/all", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCompanies(data.data);
+      } else {
+        setPopupMessage("Failed to load company information.");
+        setPopupType("error");
+        setShowPopup(true);
+      }
+    } catch (error) {
+      setPopupMessage("There was an error fetching company information.");
+      setPopupType("error");
+      setShowPopup(true);
+    }
   };
 
-  // Handle form submission
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    validateField(name, value);
+  };
+
+  const validateField = (name, value) => {
+    const errors = { ...formErrors };
+    switch (name) {
+      case "mobileUniCode":
+        errors.mobileUniCode = value.trim() === "" ? "Mobile UniCode is required" : "";
+        break;
+      case "mobileModel":
+        errors.mobileModel = value.trim() === "" ? "Mobile Model is required" : "";
+        break;
+      case "idOffice":
+        errors.idOffice = value.trim() === "" ? "Office ID is required" : "";
+        break;
+      case "mobileNumber":
+        errors.mobileNumber = value.trim() === "" ? "Mobile Number is required" : "";
+        break;
+      case "subscriptionId":
+        errors.subscriptionId = value === "" ? "Please select a subscription" : "";
+        break;
+      default:
+        break;
+    }
+    setFormErrors(errors);
+  };
+
+  const isFormValid = () => {
+    return (
+      Object.values(formErrors).every((error) => error === "") &&
+      Object.values(formData).every((field) => field !== "")
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Show spinner
+    if (!isFormValid()) return;
+    setIsLoading(true);
+
     const token = localStorage.getItem("authToken");
+
+    // Structure the data to match the required format
+    const submitData = {
+      mobileUniCode: formData.mobileUniCode,
+      mobileModel: formData.mobileModel,
+      idOffice: parseInt(formData.idOffice), // Ensure it's an integer
+      status: formData.status,
+      mobileNumber: formData.mobileNumber,
+      subscriptionId: parseInt(formData.subscriptionId), // Ensure it's an integer
+    };
 
     try {
       const response = await fetch("http://localhost:8080/api/v1/mobile/save", {
@@ -50,11 +116,11 @@ export default function CreateMobile() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       });
 
       setTimeout(() => {
-        setIsLoading(false); // Hide spinner after 1.5 seconds
+        setIsLoading(false);
         if (response.ok) {
           setPopupMessage("Mobile created successfully!");
           setPopupType("success");
@@ -68,7 +134,7 @@ export default function CreateMobile() {
       }, 1500);
     } catch (error) {
       setTimeout(() => {
-        setIsLoading(false); // Hide spinner after 1.5 seconds
+        setIsLoading(false);
         setPopupMessage("There was an error creating the mobile. Please try again.");
         setPopupType("error");
         setShowPopup(true);
@@ -77,7 +143,7 @@ export default function CreateMobile() {
   };
 
   const getMobileSubscription = async () => {
-    setIsLoading(true); // Show spinner
+    setIsLoading(true);
     const token = localStorage.getItem("authToken");
 
     try {
@@ -89,9 +155,9 @@ export default function CreateMobile() {
         },
       });
 
-      setIsLoading(false); // Hide spinner after 1.5 seconds
+      setIsLoading(false);
       if (response.ok) {
-        const data = await response.json(); // Extract the response data
+        const data = await response.json();
         setMobileSubscription(data.data);
       } else {
         setPopupMessage("Failed to load subscriptions.");
@@ -110,11 +176,11 @@ export default function CreateMobile() {
     <div>
       <main>
         <div>
-          <div className="mb-6">
-            <h1 className="text-3xl font-semibold text-gray-400">Create Mobile</h1>
-          </div>
-
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <h1 className="text-3xl font-semibold text-gray-400 mb-6">Create Mobile</h1>
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+          >
             <div>
               <label htmlFor="mobileUniCode" className="block font-medium text-[#001A6E]">
                 Mobile UniCode
@@ -127,8 +193,11 @@ export default function CreateMobile() {
                 onChange={handleInputChange}
                 placeholder="Enter mobile unique code"
                 required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+                className="p-3 border rounded-lg shadow-md w-full focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
+              {formErrors.mobileUniCode && (
+                <p className="text-red-500 text-sm">{formErrors.mobileUniCode}</p>
+              )}
             </div>
 
             <div>
@@ -143,109 +212,117 @@ export default function CreateMobile() {
                 onChange={handleInputChange}
                 placeholder="Enter mobile model"
                 required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+                className="p-3 border rounded-lg shadow-md w-full focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
+              {formErrors.mobileModel && (
+                <p className="text-red-500 text-sm">{formErrors.mobileModel}</p>
+              )}
             </div>
 
             <div>
               <label htmlFor="idOffice" className="block font-medium text-[#001A6E]">
-                Office ID
+                Office
               </label>
-              <input
-                type="number"
+              <select
                 id="idOffice"
                 name="idOffice"
                 value={formData.idOffice}
                 onChange={handleInputChange}
-                placeholder="Enter office ID"
                 required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="status" className="block font-medium text-[#001A6E]">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
+                className="p-3 border rounded-lg shadow-md w-full focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="">Select an office</option>
+                {companies.map((company) =>
+                  company.offices.map((office) => (
+                    <option key={office.idOffice} value={office.idOffice}>
+                      {company.companyName} - {office.officeName}
+                    </option>
+                  ))
+                )}
               </select>
+              {formErrors.idOffice && (
+                <p className="text-red-500 text-sm">{formErrors.idOffice}</p>
+              )}
             </div>
 
             <div>
               <label htmlFor="mobileNumber" className="block font-medium text-[#001A6E]">
                 Mobile Number
               </label>
-              <input
-                type="text"
-                id="mobileNumber"
-                name="mobileNumber"
-                value={formData.mobileNumber}
-                onChange={handleInputChange}
-                placeholder="Enter mobile number"
-                required
-                className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-              />
+              <div className="flex items-center space-x-2">
+                <span className="p-3 bg-gray-100 border rounded-lg shadow-md text-gray-600 select-none">
+                  +46
+                </span>
+                <input
+                  type="tel"
+                  id="mobileNumber"
+                  name="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={handleInputChange}
+                  placeholder="Enter your number"
+                  className="p-3 border rounded-lg shadow-md w-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  required
+                />
+              </div>
+              {formErrors.mobileNumber && (
+                <p className="text-red-500 text-sm">{formErrors.mobileNumber}</p>
+              )}
             </div>
 
             <div>
-  <label htmlFor="subscriptionId" className="block font-medium text-[#001A6E]">
-    Subscription ID
-  </label>
-  <select
-    id="subscriptionId"
-    name="subscriptionId"
-    value={formData.subscriptionId}
-    onChange={handleInputChange}
-    required
-    className="w-full mt-1 border-[#A888B5] rounded-md shadow-sm focus:border-[#EFB6C8] focus:ring-[#EFB6C8]"
-  >
-    <option value="">Select a subscription</option>
-    {mobileSubscription.map((subscription) => (
-      <option key={subscription.idMobileSubscription} value={subscription.idMobileSubscription}>
-        {subscription.subscriptionName} - {subscription.fee} SEK
-      </option>
-    ))}
-  </select>
-</div>
-
+              <label htmlFor="subscriptionId" className="block font-medium text-[#001A6E]">
+                Subscription Plan
+              </label>
+              <select
+                id="subscriptionId"
+                name="subscriptionId"
+                value={formData.subscriptionId}
+                onChange={handleInputChange}
+                required
+                className="p-3 border rounded-lg shadow-md w-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+              >
+                <option value="">Select a subscription</option>
+                {mobileSubscription.map((subscription) => (
+                  <option
+                    key={subscription.idMobileSubscription}
+                    value={subscription.idMobileSubscription}
+                  >
+                    {subscription.subscriptionName} - {subscription.fee} SEK
+                  </option>
+                ))}
+              </select>
+              {formErrors.subscriptionId && (
+                <p className="text-red-500 text-sm">{formErrors.subscriptionId}</p>
+              )}
+            </div>
 
             <div className="col-span-full flex justify-center mt-6">
               <button
                 type="submit"
-                className={`flex items-center justify-center bg-[#001A6E] text-white py-3 px-6 rounded-md font-bold transition duration-300 ${isLoading ? "cursor-not-allowed opacity-70" : "hover:bg-[#D997A5]"}`}
-                disabled={isLoading}
+                className={`p-3 bg-blue-600 text-white rounded-lg shadow-md font-bold transition duration-300 ${isLoading || !isFormValid() ? "cursor-not-allowed opacity-70" : "hover:bg-blue-700"
+                  }`}
+                disabled={isLoading || !isFormValid()}
               >
-                {isLoading ? (
-                  <span className="animate-spin">Loading...</span>
-                ) : (
-                  "Submit"
-                )}
+                {isLoading ? "Loading..." : "Submit"}
               </button>
             </div>
           </form>
         </div>
       </main>
 
-      {/* Popup */}
       {showPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-            <h3 className={`text-lg font-bold ${popupType === "success" ? "text-green-500" : "text-red-500"}`}>
+            <h3
+              className={`text-lg font-bold ${popupType === "success" ? "text-green-500" : "text-red-500"
+                }`}
+            >
               {popupType === "success" ? "Success" : "Error"}
             </h3>
             <p className="mt-2 text-gray-600">{popupMessage}</p>
             <button
               onClick={() => setShowPopup(false)}
-              className="mt-4 bg-[#EFB6C8] text-white py-2 px-4 rounded-md hover:bg-[#FFD2A0] transition duration-300"
+              className="p-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
             >
               OK
             </button>
