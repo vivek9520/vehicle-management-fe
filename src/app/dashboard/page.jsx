@@ -6,6 +6,8 @@ import CreateVehicle from '../vehicle/create/page';
 import CreateMobile from '../mobile/create/page';
 import SearchMobile from '../mobile/search/page';
 import { Car, Smartphone, Users } from 'lucide-react';
+import CreateEmployee from '../employee/create/page';
+import EmployeeSearch from '../employee/search/page';
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState('Vehicle');
@@ -99,8 +101,8 @@ export default function Dashboard() {
             {activeTab === 'Add Vehicle' && <CreateVehicle />}
             {activeTab === 'Search Phone' && <SearchMobile/>}
             {activeTab === 'Add Phone' && <CreateMobile/>}
-            {activeTab === 'Search Employee' && <p>Employee Search Form/Content</p>}
-            {activeTab === 'Add Employee' && <p>Employee Add Form/Content</p>}
+            {activeTab === 'Search Employee' &&<EmployeeSearch/>}
+            {activeTab === 'Add Employee' && <CreateEmployee/>}
           </div>
         </div>
       </main>
