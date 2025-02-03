@@ -14,14 +14,34 @@ interface Employee {
 interface Item {
   id: number;
   uniqueId: string;
+  mobileModel?: string;
   status: string;
+  mobileNumber: string;
 }
+
+interface MobileAssignRequest {
+  mobileId: number;
+  isPermanentMobile: boolean;
+}
+
+interface VehicleAssignRequest {
+  vehicleId: number;
+  isPermanentVehicle: boolean;
+}
+
+interface AssignRequest {
+  employeeId: number;
+  type: string[]; // Array of "mobile" or "vehicle"
+  mobileAssignRequest?: MobileAssignRequest;
+  vehicleAssignRequest?: VehicleAssignRequest;
+}
+
 
 const EmployeeSearch = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  const [mobileOptions, setMobileOptions] = useState<{ value: number; label: string }[]>([]);
-  const [vehicleOptions, setVehicleOptions] = useState<{ value: number; label: string }[]>([]);
+  const [mobileOptions, setMobileOptions] = useState<{ value: number; label: string; isDisabled: boolean }[]>([]);
+  const [vehicleOptions, setVehicleOptions] = useState<{ value: number; label: string; isDisabled: boolean }[]>([]);
   const [showModal, setShowModal] = useState<'mobile' | 'vehicle' | null>(null);
   const [selectedItem, setSelectedItem] = useState<{ value: number; label: string } | null>(null);
   const [isPermanent, setIsPermanent] = useState<boolean>(false);
@@ -60,25 +80,52 @@ const EmployeeSearch = () => {
     fetchEmployees();
   }, []);
 
-  const fetchOptions = async (type: 'mobile' | 'vehicle') => {
+  const fetchOptions = async (type: 'mobile' | 'vehicle', query: string = '') => {
     const token = localStorage.getItem('authToken');
     if (!token) {
       setError('Authentication token is missing.');
       return;
     }
-
+  
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/${type}`, {
+      const url =
+        type === 'mobile'
+          ? `http://localhost:8080/api/v1/mobile/search?mobileNumber=${query}`
+          : `http://localhost:8080/api/v1/vehicle/search?registrationNo=${query}`;
+  
+      const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       if (response.status === 200) {
-        const availableItems = response.data.data.filter((item: Item) => item.status === 'Available');
-        const options = availableItems.map((item: Item) => ({
-          value: item.id,
-          label: `${item.uniqueId} (Available)`,
-        }));
-
+        const items = response.data.data;
+  
+        const options = items.map((item: Item) => {
+          // For mobile, use idMobile and mobileNumber
+          if (type === 'mobile') {
+            const isAvailable = item.status === 'AVAILABLE';
+            return {
+              value: item.idMobile,  // Use idMobile for mobile search
+              label: `${item.uniqueId || ''} (${item.mobileNumber || ''}) - ${item.status}`,
+              isDisabled: !isAvailable, // Disable options that are not "AVAILABLE"
+            };
+          }
+  
+          // For vehicle, use idVehicle and registrationNo
+          if (type === 'vehicle') {
+            const isAvailable = item.status === 'AVAILABLE';
+            return {
+              value: item.idVehicle,  // Use idVehicle for vehicle search
+              label: `${item.uniqueId || ''} (${item.registrationNo || ''}) - ${item.status}`,
+              isDisabled: !isAvailable, // Disable options that are not "AVAILABLE"
+            };
+          }
+  
+          return null;
+        }).filter((option) => option !== null); // Remove any null values (safety check)
+  
+        options.sort((a, b) => (a.isDisabled === b.isDisabled ? 0 : a.isDisabled ? 1 : -1)); // Sort available items to the top
+  
         if (type === 'mobile') {
           setMobileOptions(options);
         } else {
@@ -91,10 +138,11 @@ const EmployeeSearch = () => {
       setError(`Error fetching ${type} list.`);
     }
   };
+  
 
   const handleAssign = async () => {
     if (!selectedItem || !selectedEmployee) return;
-
+  
     setLoading(true);
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -102,19 +150,32 @@ const EmployeeSearch = () => {
       setLoading(false);
       return;
     }
-
+  
     try {
       const assignType = showModal === 'mobile' ? 'mobile' : 'vehicle';
-      const payload = {
+  
+      // Construct the request body based on the selected item type
+      const payload: AssignRequest = {
         employeeId: selectedEmployee.idEmployee,
-        itemId: selectedItem.value,
-        isPermanent,
+        type: [assignType], // "mobile" or "vehicle"
+        mobileAssignRequest: showModal === 'mobile'
+          ? {
+              mobileId: selectedItem.value,
+              isPermanentMobile: isPermanent,
+            }
+          : undefined,
+        vehicleAssignRequest: showModal === 'vehicle'
+          ? {
+              vehicleId: selectedItem.value,
+              isPermanentVehicle: isPermanent,
+            }
+          : undefined,
       };
-
-      const response = await axios.post(`http://localhost:8080/api/v1/employee/assign/${assignType}`, payload, {
+  
+      const response = await axios.post('http://localhost:8080/api/v1/assign/save', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       if (response.status === 200) {
         alert(`${assignType} assigned successfully!`);
         setShowModal(null);
@@ -129,6 +190,8 @@ const EmployeeSearch = () => {
       setLoading(false);
     }
   };
+  
+  
 
   return (
     <div>
@@ -165,61 +228,37 @@ const EmployeeSearch = () => {
       {selectedEmployee && (
         <div className="border p-4 rounded-lg bg-gray-100">
           <h2 className="text-2xl font-semibold text-gray-600 mb-4">Employee Details</h2>
-          <p><strong>Unique ID:</strong> {selectedEmployee.uniqueId}</p>
-          <p><strong>Name:</strong> {selectedEmployee.employeeName}</p>
-          <p><strong>Status:</strong> {selectedEmployee.status}</p>
+          <p>
+            <strong>Unique ID:</strong> {selectedEmployee.uniqueId}
+          </p>
+          <p>
+            <strong>Name:</strong> {selectedEmployee.employeeName}
+          </p>
+          <p>
+            <strong>Status:</strong> {selectedEmployee.status}
+          </p>
 
           {selectedEmployee.status === 'Active' && (
             <div className="mt-4 flex space-x-4">
-  <button
-    onClick={() => {
-      setShowModal('mobile');
-      fetchOptions('mobile');
-    }}
-    className="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-3 px-6 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-800 transition-transform transform hover:scale-105 flex items-center space-x-2"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="currentColor"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25h-4.5A2.25 2.25 0 007.5 6v2.25m9 0h-9m9 0v9.75a2.25 2.25 0 01-2.25 2.25h-4.5A2.25 2.25 0 017.5 18V8.25m9 0v1.5m-9 0v-1.5m0 1.5h9m-6 4.5h3"
-      />
-    </svg>
-    <span>Assign Mobile</span>
-  </button>
-
-  <button
-    onClick={() => {
-      setShowModal('vehicle');
-      fetchOptions('vehicle');
-    }}
-    className="bg-gradient-to-r from-green-500 to-green-700 text-white py-3 px-6 rounded-lg shadow-lg hover:from-green-600 hover:to-green-800 transition-transform transform hover:scale-105 flex items-center space-x-2"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="currentColor"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9.75 3a3 3 0 00-3 3v12a3 3 0 003 3h4.5a3 3 0 003-3V6a3 3 0 00-3-3h-4.5zM7.5 10.5h9M7.5 13.5h9"
-      />
-    </svg>
-    <span>Assign Vehicle</span>
-  </button>
-</div>
-
+              <button
+                onClick={() => {
+                  setShowModal('mobile');
+                  fetchOptions('mobile');
+                }}
+                className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+              >
+                Assign Mobile
+              </button>
+              <button
+                onClick={() => {
+                  setShowModal('vehicle');
+                  fetchOptions('vehicle');
+                }}
+                className="bg-green-500 text-white py-2 px-4 rounded-lg"
+              >
+                Assign Vehicle
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -232,7 +271,19 @@ const EmployeeSearch = () => {
             </h2>
             <Select
               options={showModal === 'mobile' ? mobileOptions : vehicleOptions}
-              onChange={(option) => setSelectedItem(option)}
+              onChange={(option) => {
+                if (!option?.isDisabled) {
+                  setSelectedItem(option);
+                }
+              }}
+              isOptionDisabled={(option) => option.isDisabled}
+              getOptionLabel={(option) =>
+                option.isDisabled ? (
+                  <span style={{ color: 'gray' }}>{option.label}</span>
+                ) : (
+                  <span>{option.label}</span>
+                )
+              }
               isClearable
               placeholder={`Select a ${showModal === 'mobile' ? 'Mobile' : 'Vehicle'}`}
               className="mb-4"
@@ -249,13 +300,13 @@ const EmployeeSearch = () => {
             <div className="flex justify-end">
               <button
                 onClick={() => setShowModal(null)}
-                className="bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 mr-2"
+                className="bg-gray-400 text-white py-2 px-4 rounded-lg mr-2"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAssign}
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg"
               >
                 Assign
               </button>
