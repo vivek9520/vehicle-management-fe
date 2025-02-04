@@ -30,7 +30,8 @@ export interface Office {
     idOffice: string;
     idCompany:string;
     dateOfControlCurrent:string,
-    dateOfControlNext:string
+    dateOfControlNext:string,
+    status:string
   }
 
   export interface ServiceHistory{
@@ -47,4 +48,23 @@ export interface Office {
     fee: string
     
 }
+
+// Interface for MobileSubscription
+export interface MobileSubscription {
+  idMobileSubscription: number;
+  subscriptionName: string;
+  fee: string;
+}
+
+// Interface for Mobile
+export interface Mobile {
+  idMobile: number;
+  mobileUniCode: string;
+  mobileModel: string;
+  idOffice: number;
+  status: string; // Restrict status to specific values
+  mobileNumber: string;
+  mobileSubscriptionDTO: MobileSubscription;
+}
+
   
