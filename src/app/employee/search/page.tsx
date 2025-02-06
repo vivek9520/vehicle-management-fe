@@ -148,57 +148,69 @@ const fetchOptions = async (type: "mobile" | "vehicle", query: string = "") => {
   }
 };
 
-  const handleAssign = async () => {
-    if (!selectedItem || !selectedEmployee) return;
+const handleAssign = async () => {
+  if (!selectedItem || !selectedEmployee) return;
 
-    setLoading(true);
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      setError('Authentication token is missing.');
-      setLoading(false);
-      return;
-    }
+  setLoading(true);
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    setError('Authentication token is missing.');
+    setLoading(false);
+    return;
+  }
 
-    try {
-      const assignType = showModal === 'mobile' ? 'mobile' : 'vehicle';
+  try {
+    const assignType = showModal === 'mobile' ? 'mobile' : 'vehicle';
 
-      const payload: AssignRequest = {
-        employeeId: selectedEmployee.idEmployee,
-        type: [assignType],
-        mobileAssignRequest: showModal === 'mobile'
-          ? {
-              mobileId: selectedItem.value,
-              isPermanentMobile: isPermanent,
-            }
-          : undefined,
-        vehicleAssignRequest: showModal === 'vehicle'
-          ? {
-              vehicleId: selectedItem.value,
-              isPermanentVehicle: isPermanent,
-            }
-          : undefined,
-      };
+    const payload: AssignRequest = {
+      employeeId: selectedEmployee.idEmployee,
+      type: [assignType],
+      mobileAssignRequest: showModal === 'mobile'
+        ? {
+            mobileId: selectedItem.value,
+            isPermanentMobile: isPermanent,
+          }
+        : undefined,
+      vehicleAssignRequest: showModal === 'vehicle'
+        ? {
+            vehicleId: selectedItem.value,
+            isPermanentVehicle: isPermanent,
+          }
+        : undefined,
+    };
 
-      const response = await axios.post('http://localhost:8080/api/v1/assign/save', payload, {
+    const response = await axios.post('http://localhost:8080/api/v1/assign/save', payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (response.status === 201) {
+      // Update state to reflect the success
+      setSuccessMessage(`${assignType} assigned successfully!`);
+
+      // API call to update the status
+      const updateStatusUrl = `http://localhost:8080/api/v1/${assignType}/${selectedItem.value}/status?status=UNAVAILABLE`;
+
+      await axios.put(updateStatusUrl, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.status === 201) {
-        setSuccessMessage(`${assignType} assigned successfully!`);
-        setShowModal(null);
-        setSelectedItem(null);
-        setIsPermanent(false);
-        setTimeout(() => setSuccessMessage(null), 3000);
-      } else {
-        setError(`Error assigning ${assignType}.`);
-      }
-    } catch (err) {
-      setError('Error assigning item.');
-    } finally {
-      setLoading(false);
-      setShowConfirmation(false);
+      // Reset state after successful operation
+      setShowModal(null);
+      setSelectedItem(null);
+      setIsPermanent(false);
+
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } else {
+      setError(`Error assigning ${assignType}.`);
     }
-  };
+  } catch (err) {
+    setError('Error assigning item.');
+  } finally {
+    setLoading(false);
+    setShowConfirmation(false);
+  }
+};
+
 
   return (
     <div>
