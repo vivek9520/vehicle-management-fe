@@ -8,13 +8,14 @@ import SearchMobile from '../mobile/search/page';
 import { Car, Smartphone, Users } from 'lucide-react';
 import CreateEmployee from '../employee/create/page';
 import EmployeeSearch from '../employee/search/page';
+import ServiceHistoryPage from '../vehicle/service-history/page';
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState('Vehicle');
   const [activeTab, setActiveTab] = useState('Search Vehicle');
 
   const menuTabs = {
-    Vehicle: ['Search Vehicle', 'Add Vehicle'],
+    Vehicle: ['Search Vehicle', 'Add Vehicle', 'Service History'],
     Phone: ['Search Phone', 'Add Phone'],
     Employee: ['Search Employee', 'Add Employee'],
   };
@@ -99,7 +100,8 @@ export default function Dashboard() {
           <div className="mt-6 bg-white shadow-lg rounded-lg p-6">
             {activeTab === 'Search Vehicle' && <SearchPage />}
             {activeTab === 'Add Vehicle' && <CreateVehicle />}
-            {activeTab === 'Search Phone' && <SearchMobile/>}
+            {activeTab === 'Add Vehicle' && <CreateVehicle />}
+            {activeTab === 'Service History' && <ServiceHistoryPage/>}
             {activeTab === 'Add Phone' && <CreateMobile/>}
             {activeTab === 'Search Employee' &&<EmployeeSearch/>}
             {activeTab === 'Add Employee' && <CreateEmployee/>}

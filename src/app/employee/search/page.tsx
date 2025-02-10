@@ -1,45 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 import axios from 'axios';
-import { Mobile,Vehicle } from '@/app/models/types';
+import { AssignmentData, Employee, Mobile, Vehicle } from '@/app/models/types';
+import { assignItem, fetchAssignData, fetchEmployeeList, fetchMobileOptions, fetchVehicleOptions, resetAssignmentData, updateStatus } from '@/app/services/assignmentService';
+import { AssignPayload } from '@/app/models/assignmentTypes';
 
-interface Employee {
-  idEmployee: number;
-  uniqueId: string;
-  employeeName: string;
-  status: string;
-}
-
-interface Item {
-  id: number;
-  uniqueId: string;
-  mobileModel?: string;
-  status: string;
-  mobileNumber: string;
-}
-
-interface MobileAssignRequest {
-  mobileId: number;
-  isPermanentMobile: boolean;
-}
-
-interface VehicleAssignRequest {
-  vehicleId: number;
-  isPermanentVehicle: boolean;
-}
-
-interface AssignRequest {
-  employeeId: number;
-  type: string[];
-  mobileAssignRequest?: MobileAssignRequest;
-  vehicleAssignRequest?: VehicleAssignRequest;
-}
 
 const EmployeeSearch: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [assignData, setAssignData] = useState<AssignmentData | null>(null);
   const [mobileOptions, setMobileOptions] = useState<{ value: number; label: string; isDisabled: boolean }[]>([]);
   const [vehicleOptions, setVehicleOptions] = useState<{ value: number; label: string; isDisabled: boolean }[]>([]);
   const [showModal, setShowModal] = useState<'mobile' | 'vehicle' | null>(null);
@@ -50,167 +22,185 @@ const EmployeeSearch: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const [assignMobileBtn, setAssignMobileBtn] = useState("assign");
+  const [assignVehicleBtn, setAssignVehicleBtn] = useState("assign");
+
+
   useEffect(() => {
-    const fetchEmployees = async () => {
-      setLoading(true);
-      setError(null);
-
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('Authentication token is missing.');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get('http://localhost:8080/api/v1/employee/search', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (response.status === 200) {
-          setEmployees(response.data.data);
-        } else {
-          setError('Error fetching employee list.');
-        }
-      } catch (err) {
-        setError('Error fetching employee list.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEmployees();
   }, []);
 
-// Function to fetch options
-// Fetch options function
-const fetchOptions = async (type: "mobile" | "vehicle", query: string = "") => {
-  const token = localStorage.getItem("authToken");
-  if (!token) {
-    setError("Authentication token is missing.");
-    return;
-  }
 
-  try {
-    // Construct URL dynamically based on type
-    const url =
-      type === "mobile"
-        ? `http://localhost:8080/api/v1/mobile/search?mobileNumber=${query}`
-        : `http://localhost:8080/api/v1/vehicle/search?registrationNo=${query}`;
+  const fetchEmployees = async () => {
+    setLoading(true);
+    setError(null);
 
-    const response = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetchEmployeeList();
+    setEmployees(response);
+    setLoading(false);
 
-    if (response.status === 200) {
-      // Define items type based on the response
-      const items: (Mobile | Vehicle)[] = response.data.data;
+  };
 
-      // Map items to dropdown options
-      const options = items
-        .map((item) => {
-          if (type === "mobile" && "idMobile" in item) {
-            const isAvailable = item.status === "AVAILABLE";
-            return {
-              value: item.idMobile,
-              label: `${item.uniqueId || ""} (${item.mobileNumber || ""}) - ${item.status}`,
-              isDisabled: !isAvailable,
-            };
-          }
+  const fetchOptions = async (type: 'mobile' | 'vehicle', query: string = '') => {
+    try {
+      let options = [];
 
-          if (type === "vehicle" && "idVehicle" in item) {
-            const isAvailable = item.status === "AVAILABLE";
-            return {
-              value: item.idVehicle,
-              label: `${item.registrationNo || ""} (${item.brand || ""} ${item.tradeDesignation || ""}) - ${item.status}`,
-              isDisabled: !isAvailable,
-            };
-          }
-
-          return null; // Fallback for invalid items
-        })
-        .filter((option): option is { value: string; label: string; isDisabled: boolean } => option !== null);
-
-      // Sort options to show available options first
-      options.sort((a, b) => (a.isDisabled === b.isDisabled ? 0 : a.isDisabled ? 1 : -1));
-
-      // Set appropriate options based on type
-      if (type === "mobile") {
+      if (type === 'mobile') {
+        const mobileItems = await fetchMobileOptions(query);
+        options = mobileItems.map(item => ({
+          value: item.idMobile,
+          label: `${item.mobileUniCode} (${item.mobileNumber}) - ${item.status}`,
+          isDisabled: item.status !== 'AVAILABLE',
+        }));
         setMobileOptions(options);
-      } else {
+      } else if (type === 'vehicle') {
+        const vehicleItems = await fetchVehicleOptions(query);
+        options = vehicleItems.map(item => ({
+          value: item.idVehicle,
+          label: `${item.registrationNo} (${item.brand} ${item.tradeDesignation}) - ${item.status}`,
+          isDisabled: item.status !== 'AVAILABLE',
+        }));
         setVehicleOptions(options);
       }
-    } else {
-      setError(`Error fetching ${type} list: Unexpected response status.`);
+
+    } catch (error: any) {
+      setError(`Error fetching ${type} options: ${error.message || 'Unknown error occurred.'}`);
     }
-  } catch (error) {
-    setError(`Error fetching ${type} list: ${error.message || "Unknown error occurred."}`);
-  }
-};
+  };
 
-const handleAssign = async () => {
-  if (!selectedItem || !selectedEmployee) return;
+  const fetchAssignDataHandler = async (employeeId: number) => {
+    try {
+      const response = await fetchAssignData(employeeId);
 
-  setLoading(true);
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    setError('Authentication token is missing.');
-    setLoading(false);
-    return;
-  }
+      if (response === null) {
+        setAssignVehicleBtn("assign")
+        setAssignMobileBtn("assign")
+      }
+      else {
+        if (response.vehicle !== null && response.mobile !== null) {
+          setAssignVehicleBtn("reset")
+          setAssignMobileBtn("reset")
+        }
+        if (response.vehicle === null && response.mobile !== null) {
+          setAssignVehicleBtn("assign")
+          setAssignMobileBtn("reset")
+        }
+        if (response.vehicle !== null && response.mobile === null) {
+          setAssignVehicleBtn("reset")
+          setAssignMobileBtn("assign")
+        }
+      }
+      setAssignData(response);
 
-  try {
-    const assignType = showModal === 'mobile' ? 'mobile' : 'vehicle';
-
-    const payload: AssignRequest = {
-      employeeId: selectedEmployee.idEmployee,
-      type: [assignType],
-      mobileAssignRequest: showModal === 'mobile'
-        ? {
-            mobileId: selectedItem.value,
-            isPermanentMobile: isPermanent,
-          }
-        : undefined,
-      vehicleAssignRequest: showModal === 'vehicle'
-        ? {
-            vehicleId: selectedItem.value,
-            isPermanentVehicle: isPermanent,
-          }
-        : undefined,
-    };
-
-    const response = await axios.post('http://localhost:8080/api/v1/assign/save', payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (response.status === 201) {
-      // Update state to reflect the success
-      setSuccessMessage(`${assignType} assigned successfully!`);
-
-      // API call to update the status
-      const updateStatusUrl = `http://localhost:8080/api/v1/${assignType}/${selectedItem.value}/status?status=UNAVAILABLE`;
-
-      await axios.put(updateStatusUrl, null, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      // Reset state after successful operation
-      setShowModal(null);
-      setSelectedItem(null);
-      setIsPermanent(false);
-
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } else {
-      setError(`Error assigning ${assignType}.`);
+    } catch (err) {
+      console.error('Error in fetchAssignDataHandler:', err);
+      setError('Error fetching assigned data.');
     }
-  } catch (err) {
-    setError('Error assigning item.');
-  } finally {
-    setLoading(false);
-    setShowConfirmation(false);
-  }
-};
+  };
 
+
+  const handleEmployeeSelection = (
+    selectedOption: SingleValue<{ value: number; label: string }>
+  ) => {
+    if (selectedOption) {
+      const employee = employees.find(
+        (emp) => emp.idEmployee === selectedOption.value
+      );
+      setSelectedEmployee(employee || null);
+      setAssignData(null);
+
+      if (employee) {
+        fetchAssignDataHandler(employee.idEmployee);
+      }
+    } else {
+      // Handle the case when the selection is cleared
+      setSelectedEmployee(null);
+      setAssignData(null);
+    }
+  };
+
+  const handleAssign = async () => {
+    if (!selectedItem || !selectedEmployee) return;
+    setLoading(true);
+    try {
+      const assignType = showModal === 'mobile' ? 'mobile' : 'vehicle';
+
+      const payload: AssignPayload = {
+        employeeId: selectedEmployee.idEmployee,
+        type: [assignType],
+        mobileAssignRequest:
+          showModal === 'mobile'
+            ? {
+              mobileId: selectedItem.value,
+              isPermanentMobile: isPermanent,
+            }
+            : undefined,
+        vehicleAssignRequest:
+          showModal === 'vehicle'
+            ? {
+              vehicleId: selectedItem.value,
+              isPermanentVehicle: isPermanent,
+            }
+            : undefined,
+      };
+
+      const response = await assignItem(payload);
+
+      if (response.status === 201) {
+        setSuccessMessage(`${assignType} assigned successfully!`);
+
+        await updateStatus(assignType, selectedItem.value, 'UNAVAILABLE');
+
+        setShowModal(null);
+        setSelectedItem(null);
+        setIsPermanent(false);
+        // Fetch the latest assignment data for the selected employee
+        await fetchAssignDataHandler(selectedEmployee.idEmployee);
+
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        setError(`Error assigning ${assignType}.`);
+      }
+    } catch (err) {
+      setError('Error assigning item.');
+    } finally {
+      setLoading(false);
+      setShowConfirmation(false);
+    }
+  };
+
+  const handleReset = async (resetType: string) => {
+    setLoading(true);
+
+
+    try {
+
+      if (assignData !== null) {
+        if (resetType === "mobile") {
+          const updateresult = updateStatus("mobile", assignData.mobile.idMobile, 'AVAILABLE');
+          resetAssignmentData(assignData.idAssignment, 'mobile')
+        }
+
+        if (resetType === "vehicle") {
+          const updateresult = updateStatus("vehicle", assignData.vehicle.idVehicle, 'AVAILABLE');
+          resetAssignmentData(assignData.idAssignment, 'vehicle')
+        }
+        // Fetch the latest assignment data for the selected employee
+
+        await fetchAssignDataHandler(assignData?.employee.idEmployee);
+      }
+
+    
+
+    setSuccessMessage(`${resetType} reset successfully!`);
+
+    } catch (err) {
+      setError('Error resetting item.');
+    } finally {
+      setLoading(false);
+      setShowConfirmation(false);
+    }
+  };
 
   return (
     <div>
@@ -232,10 +222,7 @@ const handleAssign = async () => {
             value: emp.idEmployee,
             label: `${emp.employeeName} (${emp.status})`,
           }))}
-          onChange={(selectedOption) => {
-            const employee = employees.find((emp) => emp.idEmployee === selectedOption?.value);
-            setSelectedEmployee(employee || null);
-          }}
+          onChange={(selectedOption) => handleEmployeeSelection(selectedOption)}
           isClearable
           placeholder="Select an Employee"
           className="w-full"
@@ -258,100 +245,118 @@ const handleAssign = async () => {
             <strong>Status:</strong> {selectedEmployee.status}
           </p>
 
-          {selectedEmployee.status === 'Active' && (
-            <div className="mt-4 flex space-x-4">
+          <div className="mt-6 flex space-x-4">
+
+            {assignMobileBtn === "assign" ?
               <button
                 onClick={() => {
                   setShowModal('mobile');
                   fetchOptions('mobile');
                 }}
-                className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                className="bg-blue-500 text-white py-2 px-4 rounded"
               >
                 Assign Mobile
+              </button> :
+              <button
+                onClick={() => {
+                  handleReset('mobile');
+                  // setShowModal('mobile');
+                  // fetchOptions('mobile');
+                }}
+                className="bg-blue-500 text-white py-2 px-4 rounded"
+              >
+                Reset Mobile
               </button>
+            }
+
+            {assignVehicleBtn === "assign" ?
               <button
                 onClick={() => {
                   setShowModal('vehicle');
                   fetchOptions('vehicle');
                 }}
-                className="bg-green-500 text-white py-2 px-4 rounded-lg"
+                className="bg-green-500 text-white py-2 px-4 rounded"
               >
                 Assign Vehicle
+              </button> : <button
+                onClick={() => {
+                  handleReset('vehicle');
+                  // setShowModal('vehicle');
+                  // fetchOptions('vehicle');
+                }}
+                className="bg-green-500 text-white py-2 px-4 rounded"
+              >
+                Reset Vehicle
               </button>
+
+            }
+
+
+          </div>
+
+          {assignData && (
+            <div className="mt-6">
+              <h3 className="font-semibold text-gray-700">Current Assignments</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {assignData.mobile && (
+                  <div className="bg-white border p-4 rounded-lg">
+                    <h4 className="font-semibold">Mobile</h4>
+                    <p>{assignData.mobile.mobileModel}</p>
+                    <p>Status: {assignData.mobile.status}</p>
+                  </div>
+                )}
+                {assignData.vehicle && (
+                  <div className="bg-white border p-4 rounded-lg">
+                    <h4 className="font-semibold">Vehicle</h4>
+                    <p>{assignData.vehicle.registrationNo}</p>
+                    <p>Status: {assignData.vehicle.status}</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
       )}
 
+      {/* Modal for assigning item */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg w-96">
             <h2 className="text-xl font-semibold mb-4">
-              Assign {showModal === 'mobile' ? 'Mobile' : 'Vehicle'}
+              {assignData && (showModal === 'mobile' && assignData.mobile || showModal === 'vehicle' && assignData.vehicle)
+                ? 'Reset Assignment'
+                : `Assign ${showModal === 'mobile' ? 'Mobile' : 'Vehicle'}`}
             </h2>
             <Select
               options={showModal === 'mobile' ? mobileOptions : vehicleOptions}
-              onChange={(option) => {
-                if (!option?.isDisabled) {
-                  setSelectedItem(option);
-                }
-              }}
-              isOptionDisabled={(option) => option.isDisabled}
-              getOptionLabel={(option) =>
-                option.isDisabled ? (
-                  <span style={{ color: 'gray' }}>{option.label}</span>
-                ) : (
-                  <span>{option.label}</span>
-                )
-              }
+              onChange={(selectedOption) => setSelectedItem(selectedOption)}
               isClearable
-              placeholder={`Select a ${showModal === 'mobile' ? 'Mobile' : 'Vehicle'}`}
-              className="mb-4"
+              placeholder={`Select a ${showModal}`}
             />
-            <label className="flex items-center mb-4">
-              <input
-                type="checkbox"
-                checked={isPermanent}
-                onChange={() => setIsPermanent(!isPermanent)}
-                className="mr-2"
-              />
-              Permanent Assignment
-            </label>
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowModal(null)}
-                className="bg-gray-400 text-white py-2 px-4 rounded-lg mr-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowConfirmation(true)}
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg"
-              >
-                Proceed
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Confirm Assignment</h2>
-            <p>Are you sure you want to assign this {showModal} to {selectedEmployee?.employeeName}?</p>
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={() => setShowConfirmation(false)}
-                className="bg-gray-400 text-white py-2 px-4 rounded-lg mr-2"
-              >
-                Cancel
-              </button>
+            <div className="mt-4 flex justify-between">
+              <div>
+                <label className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox"
+                    checked={isPermanent}
+                    onChange={() => setIsPermanent(!isPermanent)}
+                  />
+                  <span className="ml-2">Permanent</span>
+                </label>
+              </div>
               <button
                 onClick={handleAssign}
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg"
+                disabled={!selectedItem}
+                className={`bg-blue-500 text-white py-2 px-4 rounded ${!selectedItem ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Confirm
+                Assign
+              </button>
+              <button
+                onClick={() => setShowModal(null)}
+                className="bg-red-500 text-white py-2 px-4 rounded"
+              >
+                Cancel
               </button>
             </div>
           </div>

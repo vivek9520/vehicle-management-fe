@@ -86,7 +86,6 @@ const SearchPage = () => {
       'modifiedDate',
       'createdBy',
       'lastModifiedBy',
-      'idVehicle',
       'idOffice',
     ];
     return Object.entries(details).filter(([key]) => !excludedFields.includes(key));

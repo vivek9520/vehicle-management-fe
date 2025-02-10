@@ -13,7 +13,7 @@ export interface Office {
 
 
   export interface Vehicle {
-    idVehicle:string
+    idVehicle:number
     dateOfFirstCommissioning: string;
     acquisitionDate: string;
     registrationNo: string;
@@ -62,9 +62,26 @@ export interface Mobile {
   mobileUniCode: string;
   mobileModel: string;
   idOffice: number;
-  status: string; // Restrict status to specific values
+  status: string; 
   mobileNumber: string;
   mobileSubscriptionDTO: MobileSubscription;
 }
+
+export interface Employee {
+  idEmployee: number;
+  uniqueId: string;
+  employeeName: string;
+  status: 'Active' | 'Inactive';  
+}
+
+export interface AssignmentData {
+  idAssignment: number;
+  employee: Employee;
+  mobile: Mobile;
+  vehicle: Vehicle;
+  permanentVehicle: boolean;
+  permanentMobile: boolean;
+}
+
 
   
