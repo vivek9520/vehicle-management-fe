@@ -1,18 +1,64 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';  // Import useRouter for redirection
 import SearchPage from '../vehicle/search/page';
 import CreateVehicle from '../vehicle/create/page';
 import CreateMobile from '../mobile/create/page';
 import SearchMobile from '../mobile/search/page';
-import { Car, Smartphone, Users } from 'lucide-react';
 import CreateEmployee from '../employee/create/page';
 import EmployeeSearch from '../employee/search/page';
 import ServiceHistoryPage from '../vehicle/service-history/page';
+import { Car, Smartphone, Users, MoreVertical } from 'lucide-react';
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState('Vehicle');
   const [activeTab, setActiveTab] = useState('Search Vehicle');
+  const [showLogoutMenu, setShowLogoutMenu] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const LOGOUT_TIMEOUT = 600000; // 10 minutes
+
+  const router = useRouter();  
+
+  let logoutTimer;
+
+  const resetLogoutTimer = () => {
+    clearTimeout(logoutTimer);
+    logoutTimer = setTimeout(handleLogout, LOGOUT_TIMEOUT);
+  };
+
+  const handleLogout = () => {
+    alert('Session expired. You are being logged out.');
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    router.push('/login'); // Redirect to login page
+  };
+
+  useEffect(() => {
+    // Check if user is authenticated
+    if (!localStorage.getItem('authToken') && !sessionStorage.getItem('authToken')) {
+      router.push('/login'); // Redirect to login if not authenticated
+    } else {
+      setLoading(false); // If authenticated, stop loading
+    }
+
+    // Start the logout timer
+    resetLogoutTimer();
+
+    // Listen for user activity
+    window.addEventListener('mousemove', resetLogoutTimer);
+    window.addEventListener('keypress', resetLogoutTimer);
+    window.addEventListener('scroll', resetLogoutTimer);
+
+    return () => {
+      // Cleanup event listeners and timer
+      clearTimeout(logoutTimer);
+      window.removeEventListener('mousemove', resetLogoutTimer);
+      window.removeEventListener('keypress', resetLogoutTimer);
+      window.removeEventListener('scroll', resetLogoutTimer);
+    };
+  }, []);
 
   const menuTabs = {
     Vehicle: ['Search Vehicle', 'Add Vehicle', 'Service History'],
@@ -20,10 +66,14 @@ export default function Dashboard() {
     Employee: ['Search Employee', 'Add Employee'],
   };
 
-  const handleLogout = () => {
-    // Add your logout logic here (e.g., clearing tokens, redirecting, etc.)
-    console.log('Logged out');
-  };
+  if (loading) {
+    // Display a loading spinner or message while checking authentication
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="spinner-border animate-spin border-4 border-blue-600 rounded-full h-12 w-12"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
@@ -32,7 +82,7 @@ export default function Dashboard() {
         <div className="p-6 flex items-center border-b border-blue-400">
           <img
             src="/logo/logo 1.png"
-            alt="Fitness Pro"
+            alt="QuickManage"
             className="w-10 h-10 mr-3 rounded-full"
           />
           <span className="text-2xl font-bold">QuickManage</span>
@@ -42,9 +92,10 @@ export default function Dashboard() {
             {Object.keys(menuTabs).map((menu) => (
               <li
                 key={menu}
-                className={`px-4 py-3 flex items-center rounded-lg cursor-pointer transition-all duration-300 ${activeMenu === menu
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'hover:bg-blue-500 hover:shadow-sm'
+                className={`px-4 py-3 flex items-center rounded-lg cursor-pointer transition-all duration-300 ${
+                  activeMenu === menu
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'hover:bg-blue-500 hover:shadow-sm'
                 }`}
                 onClick={() => {
                   setActiveMenu(menu);
@@ -68,14 +119,26 @@ export default function Dashboard() {
         {/* Header */}
         <header className="flex justify-between items-center bg-gradient-to-r from-white to-gray-100 p-6 shadow-md">
           <h1 className="text-2xl font-semibold text-gray-800">{activeMenu}</h1>
-          <div className="flex items-center space-x-6">
-            {/* Logout Button */}
+
+          {/* Logout Dropdown */}
+          <div className="relative">
             <button
-              onClick={handleLogout}
-              className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-all"
+              onClick={() => setShowLogoutMenu(!showLogoutMenu)}
+              className="p-2 rounded-full hover:bg-gray-200 transition-all"
             >
-              Logout
+              <MoreVertical className="w-6 h-6 text-gray-700" />
             </button>
+
+            {showLogoutMenu && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 transition-all"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </header>
 
@@ -85,9 +148,10 @@ export default function Dashboard() {
             {menuTabs[activeMenu].map((tab) => (
               <button
                 key={tab}
-                className={`px-4 py-2 text-sm font-medium transition-all ${activeTab === tab
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-blue-600'
+                className={`px-4 py-2 text-sm font-medium transition-all ${
+                  activeTab === tab
+                    ? 'border-b-2 border-blue-600 text-blue-600'
+                    : 'text-gray-600 hover:text-blue-600'
                 }`}
                 onClick={() => setActiveTab(tab)}
               >
@@ -100,11 +164,11 @@ export default function Dashboard() {
           <div className="mt-6 bg-white shadow-lg rounded-lg p-6">
             {activeTab === 'Search Vehicle' && <SearchPage />}
             {activeTab === 'Add Vehicle' && <CreateVehicle />}
-            {activeTab === 'Add Vehicle' && <CreateVehicle />}
-            {activeTab === 'Service History' && <ServiceHistoryPage/>}
-            {activeTab === 'Add Phone' && <CreateMobile/>}
-            {activeTab === 'Search Employee' &&<EmployeeSearch/>}
-            {activeTab === 'Add Employee' && <CreateEmployee/>}
+            {activeTab === 'Service History' && <ServiceHistoryPage />}
+            {activeTab === 'Search Phone' && <SearchMobile />}
+            {activeTab === 'Add Phone' && <CreateMobile />}
+            {activeTab === 'Search Employee' && <EmployeeSearch />}
+            {activeTab === 'Add Employee' && <CreateEmployee />}
           </div>
         </div>
       </main>

@@ -15,8 +15,10 @@ const EmployeeSearch: React.FC = () => {
   const [mobileOptions, setMobileOptions] = useState<{ value: number; label: string; isDisabled: boolean }[]>([]);
   const [vehicleOptions, setVehicleOptions] = useState<{ value: number; label: string; isDisabled: boolean }[]>([]);
   const [showModal, setShowModal] = useState<'mobile' | 'vehicle' | null>(null);
-  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
-  const [selectedItem, setSelectedItem] = useState<{ value: number; label: string } | null>(null);
+  const [confirmationData, setConfirmationData] = useState<{
+    action: 'assign' | 'reset';
+    type: 'mobile' | 'vehicle';
+  } | null>(null);  const [selectedItem, setSelectedItem] = useState<{ value: number; label: string } | null>(null);
   const [isPermanent, setIsPermanent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +41,20 @@ const EmployeeSearch: React.FC = () => {
     setEmployees(response);
     setLoading(false);
 
+  };
+
+  const showAssignConfirmation = () => {
+    setConfirmationData({
+      action: 'assign',
+      type: showModal as 'mobile' | 'vehicle',
+    });
+  };
+
+  const showResetConfirmation = (type: 'mobile' | 'vehicle') => {
+    setConfirmationData({
+      action: 'reset',
+      type,
+    });
   };
 
   const fetchOptions = async (type: 'mobile' | 'vehicle', query: string = '') => {
@@ -165,17 +181,18 @@ const EmployeeSearch: React.FC = () => {
       setError('Error assigning item.');
     } finally {
       setLoading(false);
-      setShowConfirmation(false);
+      setConfirmationData(null);
     }
   };
 
   const handleReset = async (resetType: string) => {
     setLoading(true);
-
-
+    
     try {
 
       if (assignData !== null) {
+        await fetchAssignDataHandler(assignData?.employee.idEmployee);
+
         if (resetType === "mobile") {
           const updateresult = updateStatus("mobile", assignData.mobile.idMobile, 'AVAILABLE');
           resetAssignmentData(assignData.idAssignment, 'mobile')
@@ -198,7 +215,7 @@ const EmployeeSearch: React.FC = () => {
       setError('Error resetting item.');
     } finally {
       setLoading(false);
-      setShowConfirmation(false);
+      setConfirmationData (null);
     }
   };
 
@@ -362,7 +379,15 @@ const EmployeeSearch: React.FC = () => {
           </div>
         </div>
       )}
+      {confirmationData && (
+        <div className="modal">
+          <p>Are you sure you want to {confirmationData.action} this {confirmationData.type}?</p>
+          <button onClick={confirmationData.action === 'assign' ? handleAssign : () => handleReset(confirmationData.type)}>Confirm</button>
+          <button onClick={() => setConfirmationData(null)}>Cancel</button>
+        </div>
+      )}
     </div>
+    
   );
 };
 

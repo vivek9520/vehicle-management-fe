@@ -92,7 +92,7 @@ const SearchPage = () => {
   };
 
   return (
-    <div>
+    <div> 
       {/* Section Title */}
       <div className="mb-6">
         <h1 className="text-3xl font-semibold text-gray-400">Mobile Search</h1>

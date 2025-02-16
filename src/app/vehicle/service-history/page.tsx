@@ -52,22 +52,12 @@ const ServiceHistoryPage = () => {
     }
   };
 
-  // Navigate back to the search page
-  const handleBack = () => {
-    router.push('/vehicle/search'); // Redirect to search page
-  };
+
 
   return (
-    <div className="min-h-screen bg-[#F9F6F1] flex flex-col py-6 px-4 relative">
+    <div>
       {/* Back Link */}
       <div className="mb-6">
-        <a
-          href="#"
-          onClick={handleBack}
-          className="text-blue-500 mb-2 inline-block hover:text-blue-700 transition duration-300"
-        >
-          &larr; Back
-        </a>
         <h1 className="text-3xl font-semibold text-gray-700">Vehicle Service History</h1>
         <p className="text-gray-500">Review the service details for this vehicle.</p>
       </div>

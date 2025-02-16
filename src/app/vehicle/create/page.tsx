@@ -8,7 +8,7 @@ import { Company, Office, Vehicle } from "@/app/models/types";
 export default function CreateVehicle() {
 
   const initialFormData = {
-    idVehicle: "", 
+    idVehicle:"" , 
     dateOfFirstCommissioning: "",
     acquisitionDate: "",
     registrationNo: "",
@@ -25,7 +25,8 @@ export default function CreateVehicle() {
     idOffice: "",
     idCompany: "",
     dateOfControlCurrent: "",
-    dateOfControlNext: ""
+    dateOfControlNext: "",
+    status:""
   };
   // State for form fields
   const [formData, setFormData] = useState<Vehicle>(initialFormData);
